@@ -8,9 +8,7 @@ Plot the surface-pojected spectral functions of wannier90 _hr.dat files using Fo
 - Fourth is a kpoints file.
   
 *Output files:*
-- First is *seedname*_band.dat This is the band structure in a format that gnuplot can work with
-  - An rgb variable is given to show the orbital projections. Equally spaced hues are chosen for the base colours to give the highest contrast 
-- Second is *seedname*_band.gnu. This is a simple gnuplot script to plot *seedname*_band.dat
+- *seedname*_spec_func.dat. This is the data file with the spectral function for each layer
 
 ## Master input file
 - This file needs the filename 'INPUT'
