@@ -126,7 +126,7 @@ contains
         tot_spec_func=sum(spec_func, dim=2)
         write(ofname, '(2a)') trim(adjustl(seedname)), '_spec_func.dat'
         write(nkp_string, '(i10)') nkp
-        write(fmt_string, '(3a)') '(', trim(adjustl(nkp_string)), '(1x,es11.4))'
+        write(fmt_string, '(3a)') '(', trim(adjustl(nkp_string)), '(1x,es14.7))'
         open (201, file=trim(adjustl(ofname)))
         do il=1, nlayers
             write(201, fmt='(a,i6)') 'layer= ', il
