@@ -3,10 +3,10 @@ import matplotlib.pyplot as plt
 
 
 def read_layer_index():
+    user_input = input('Enter the layer for projection '
+                       '(enter \'all\' for sum of all layers): ')
     try:
-        user_input = int(input('Enter the layer for projection '
-                               '(enter \'all\' for sum of all layers)'))
-        layer_index = user_input
+        layer_index = int(user_input)
     except ValueError:
         if str(user_input).upper() == 'ALL':
             layer_index = 0
