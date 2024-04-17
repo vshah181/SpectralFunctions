@@ -43,3 +43,6 @@ Plot the surface-pojected spectral functions of wannier90 _hr.dat files using Fo
     0.00 0.00 0.00 G
     0.10 0.10 0.00 M
 In this example, there are 200 kpoints in total and we go along the X - $\Gamma$ - M direction
+
+### NOTE: 
+The python script requires numpy and matplotlib to work properly.
