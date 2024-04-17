@@ -2,6 +2,16 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
+def read_layer_index():
+    try:
+        user_input = int(input('Enter the layer for projection '
+                               '(enter \'all\' for sum of all layers)'))
+        layer_index = user_input
+    except ValueError:
+        if str(user_input).upper() == 'ALL':
+            layer_index = 0
+    return layer_index
+
 def read_master_input():
     f = open('INPUT', 'r')
     nlayers = 0
@@ -98,12 +108,13 @@ def plot_spectra(layer, spectral_function, klist, omegas):
 
 
 def main():
+    layer_index = read_layer_index()
     nlayers, efermi, energy_array, case = read_master_input()
     kdists = read_kpoints(case)
     nkp = len(kdists)
     nene = len(energy_array)
     spectral_function = read_spectral_function(case, nene, nkp, nlayers)
-    plot_spectra(0, spectral_function, kdists, energy_array)
+    plot_spectra(layer_index, spectral_function, kdists, energy_array)
 
 
 if __name__ == '__main__':
