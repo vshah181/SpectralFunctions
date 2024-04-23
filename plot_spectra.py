@@ -97,13 +97,15 @@ def read_spectral_function(case, nene, nkp, nlayers):
     return spectral_function
 
 
-def plot_spectra(layer, spectral_function, klist, omegas):
+def plot_spectra(layer, spectral_function, klist, omegas, case):
     # Layer 0 means plot the sum of all the layer contribution,
     # otherwise you can specify which layer you want to plot.
     if layer == 0:
         fig_title = 'All layers'
+        filename = f'{case}_layer_all.png'
     else:
         fig_title = f'Layer = {layer}'
+        filename = f'{case}_layer_{layer}.png'
     fig = plt.figure(figsize=(3, 6))
     ax = fig.add_subplot(1, 1, 1)
     yy, xx = np.meshgrid(omegas, klist)
@@ -113,7 +115,7 @@ def plot_spectra(layer, spectral_function, klist, omegas):
     ax.set_ylabel(r'$E - E_F$ (eV)')
     ax.set_xlabel(r'$k (\AA^{-1})$')
     plt.tight_layout()
-    plt.show()
+    plt.savefig(filename, dpi=350)
 
 
 def main():
@@ -123,7 +125,7 @@ def main():
     nkp = len(kdists)
     nene = len(energy_array)
     spectral_function = read_spectral_function(case, nene, nkp, nlayers)
-    plot_spectra(layer_index, spectral_function, kdists, energy_array)
+    plot_spectra(layer_index, spectral_function, kdists, energy_array, case)
 
 
 if __name__ == '__main__':
