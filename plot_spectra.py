@@ -74,6 +74,7 @@ def read_kpoints(case):
         for j in range(kpt_per_path):
             kdists[ik + 1] = np.linalg.norm(abs_dk) + kdists[ik]
             ik += 1
+    kdists -= kdists[kpt_per_path]
     return kdists
 
 
@@ -99,11 +100,19 @@ def read_spectral_function(case, nene, nkp, nlayers):
 def plot_spectra(layer, spectral_function, klist, omegas):
     # Layer 0 means plot the sum of all the layer contribution,
     # otherwise you can specify which layer you want to plot.
+    if layer == 0:
+        fig_title = 'All layers'
+    else:
+        fig_title = f'Layer = {layer}'
     fig = plt.figure(figsize=(3, 6))
     ax = fig.add_subplot(1, 1, 1)
     yy, xx = np.meshgrid(omegas, klist)
     ax.pcolormesh(xx, yy, spectral_function[:, layer, :], shading='gouraud',
                   norm='log', cmap='afmhot')
+    ax.set_title(fig_title)
+    ax.set_ylabel(r'$E - E_F$ (eV)')
+    ax.set_xlabel(r'$k (\AA^{-1})$')
+    plt.tight_layout()
     plt.show()
 
 
