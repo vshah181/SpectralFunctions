@@ -12,6 +12,7 @@ def read_layer_index():
             layer_index = 0
     return layer_index
 
+
 def read_master_input():
     f = open('INPUT', 'r')
     nlayers = 0
@@ -34,7 +35,8 @@ def read_master_input():
         elif split_line[0] == 'seedname':
             case = split_line[1]
     f.close()
-    energy_array = np.arange(emin-fermi_level, emax-fermi_level, energy_step)
+    energy_array = np.arange(emin - fermi_level, emax - fermi_level,
+                             energy_step)
     return nlayers, fermi_level, energy_array, case
 
 
@@ -63,13 +65,13 @@ def read_kpoints(case):
     f.close()
     for i in range(n_hsym_pts):
         abs_hsym_pts[i, :] = hsym_pts[i, 0] * bvec[0, :] \
-                           + hsym_pts[i, 1] * bvec[1, :] \
-                           + hsym_pts[i, 2] * bvec[2, :]
+                             + hsym_pts[i, 1] * bvec[1, :] \
+                             + hsym_pts[i, 2] * bvec[2, :]
     ik = 0
     for i in range(n_hsym_pts - 1):
-        kpath = hsym_pts[i+1, :] - hsym_pts[i, :]
+        kpath = hsym_pts[i + 1, :] - hsym_pts[i, :]
         dk = kpath / kpt_per_path
-        abs_kpath = abs_hsym_pts[i+1, :] - abs_hsym_pts[i, :]
+        abs_kpath = abs_hsym_pts[i + 1, :] - abs_hsym_pts[i, :]
         abs_dk = abs_kpath / kpt_per_path
         for j in range(kpt_per_path):
             kdists[ik + 1] = np.linalg.norm(abs_dk) + kdists[ik]
@@ -79,13 +81,13 @@ def read_kpoints(case):
 
 
 def read_spectral_function(case, nene, nkp, nlayers):
-    spectral_function = np.empty([nkp, 1+nlayers, nene])
+    spectral_function = np.empty([nkp, 1 + nlayers, nene])
     filename = case + '_spec_func.dat'
     layer = 1
     f = open(filename, 'r')
     for line in f:
         empty_line = (line == ' \n')
-        if not(empty_line) and line.split()[0] == 'layer=':
+        if not (empty_line) and line.split()[0] == 'layer=':
             try:
                 layer = int(line.split()[1])
             except ValueError:
@@ -110,7 +112,7 @@ def plot_spectra(layer, spectral_function, klist, omegas, case):
     ax = fig.add_subplot(1, 1, 1)
     yy, xx = np.meshgrid(omegas, klist)
     ax.pcolormesh(xx, yy, spectral_function[:, layer, :], shading='gouraud',
-                  norm='log')
+                  cmap='inferno', norm='log')
     ax.set_title(fig_title)
     ax.set_ylabel(r'$E - E_F$ (eV)')
     ax.set_xlabel(r'$k (\AA^{-1})$')
