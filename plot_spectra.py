@@ -110,7 +110,7 @@ def plot_spectra(layer, spectral_function, klist, omegas, case):
     ax = fig.add_subplot(1, 1, 1)
     yy, xx = np.meshgrid(omegas, klist)
     ax.pcolormesh(xx, yy, spectral_function[:, layer, :], shading='gouraud',
-                  norm='log', cmap='afmhot')
+                  norm='log')
     ax.set_title(fig_title)
     ax.set_ylabel(r'$E - E_F$ (eV)')
     ax.set_xlabel(r'$k (\AA^{-1})$')
