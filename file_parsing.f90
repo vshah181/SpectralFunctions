@@ -10,11 +10,12 @@ private
     real*8 :: e_fermi, emin, emax, de, eta
     integer, allocatable :: r_list(:, :), weights(:)
     character, allocatable :: high_sym_pt_symbols(:)
-    integer :: num_bands, num_r_pts, nkpt_per_path, nkpath, nlayers
+    integer :: num_bands, num_r_pts, nkpt_per_path, nkpath, nlayers, direction
     logical :: e_fermi_present
     public num_bands, num_r_pts, weights, r_list, r_ham_list, read_hr,         &
            write_spec_func, high_sym_pts, nkpath, nkpt_per_path, read_kpoints, &
-           read_potential, nlayers, basis, bvec, emin, emax, de, eta, potential
+           read_potential, nlayers, basis, bvec, emin, emax, de, eta,          &
+           potential, direction
 contains
     subroutine read_input
         character(len=99) :: label, ival, line, temp_line
@@ -42,6 +43,8 @@ contains
             else if(trim(adjustl(label)) .eq. 'energy_step') then
                 read(ival, *) de
             else if(trim(adjustl(label)) .eq. 'broadening_factor') then
+                read(ival, *) eta
+            else if(trim(adjustl(label)) .eq. 'direction') then
                 read(ival, *) eta
             else if(trim(adjustl(label)) .eq. 'e_fermi') then
                 read(ival, *) e_fermi

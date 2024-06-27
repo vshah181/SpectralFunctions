@@ -20,7 +20,7 @@ def read_master_input():
     emin = 0.0
     emax = 0.0
     energy_step = 1.0
-    case = 'seedname'
+    seedname = 'seedname'
     for line in f:
         split_line = line.split()
         if split_line[0] == 'nlayers':
@@ -33,15 +33,15 @@ def read_master_input():
             emin = float(split_line[1])
             emax = float(split_line[2])
         elif split_line[0] == 'seedname':
-            case = split_line[1]
+            seedname = split_line[1]
     f.close()
     energy_array = np.arange(emin - fermi_level, emax - fermi_level,
                              energy_step)
-    return nlayers, fermi_level, energy_array, case
+    return nlayers, fermi_level, energy_array, seedname
 
 
-def read_nnkp(case):
-    filename = case + '.nnkp'
+def read_nnkp(seedname):
+    filename = seedname + '.nnkp'
     bvec = np.empty([3, 3])
     f = open(filename)
     for line in f:
@@ -52,9 +52,9 @@ def read_nnkp(case):
     return bvec
 
 
-def read_kpoints(case):
+def read_kpoints(seedname):
     f = open('kpoints', 'r')
-    bvec = read_nnkp(case)
+    bvec = read_nnkp(seedname)
     kpt_per_path = int(f.readline())
     n_hsym_pts = int(f.readline())
     hsym_pts = np.empty([n_hsym_pts, 3])
@@ -80,9 +80,9 @@ def read_kpoints(case):
     return kdists
 
 
-def read_spectral_function(case, nene, nkp, nlayers):
+def read_spectral_function(seedname, nene, nkp, nlayers):
     spectral_function = np.empty([nkp, 1 + nlayers, nene])
-    filename = case + '_spec_func.dat'
+    filename = seedname + '_spec_func.dat'
     layer = 1
     f = open(filename, 'r')
     for line in f:
@@ -99,15 +99,15 @@ def read_spectral_function(case, nene, nkp, nlayers):
     return spectral_function
 
 
-def plot_spectra(layer, spectral_function, klist, omegas, case):
+def plot_spectra(layer, spectral_function, klist, omegas, seedname):
     # Layer 0 means plot the sum of all the layer contribution,
     # otherwise you can specify which layer you want to plot.
     if layer == 0:
         fig_title = 'All layers'
-        filename = f'{case}_layer_all.png'
+        filename = f'{seedname}_layer_all.png'
     else:
         fig_title = f'Layer = {layer}'
-        filename = f'{case}_layer_{layer}.png'
+        filename = f'{seedname}_layer_{layer}.png'
     fig = plt.figure(figsize=(3, 6))
     ax = fig.add_subplot(1, 1, 1)
     yy, xx = np.meshgrid(omegas, klist)
@@ -122,12 +122,12 @@ def plot_spectra(layer, spectral_function, klist, omegas, case):
 
 def main():
     layer_index = read_layer_index()
-    nlayers, efermi, energy_array, case = read_master_input()
-    kdists = read_kpoints(case)
+    nlayers, efermi, energy_array, seedname = read_master_input()
+    kdists = read_kpoints(seedname)
     nkp = len(kdists)
     nene = len(energy_array)
-    spectral_function = read_spectral_function(case, nene, nkp, nlayers)
-    plot_spectra(layer_index, spectral_function, kdists, energy_array, case)
+    spectral_function = read_spectral_function(seedname, nene, nkp, nlayers)
+    plot_spectra(layer_index, spectral_function, kdists, energy_array, seedname)
 
 
 if __name__ == '__main__':
