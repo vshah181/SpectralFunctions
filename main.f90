@@ -19,7 +19,7 @@ implicit none
     call read_hr ! r_list, r_ham_list, weights, num_r_pts, num_bands, nlayers
     call read_potential !potential
 
-    nene=1+nint((emax-emin)/de)
+    nene=int((emax-emin)/de)
     tot_bands=num_bands*nlayers
     nkp=1+(nkpt_per_path*nkpath)
     allocate(kp(nkp, 3), kdists(nkp), hsym_kdists(1+nkpath), omegas(nene))
