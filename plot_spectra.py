@@ -21,6 +21,7 @@ def read_master_input():
     emax = 0.0
     energy_step = 1.0
     seedname = 'seedname'
+    fig_dimensions = np.empty([2])
     for line in f:
         split_line = line.split()
         if split_line[0] == 'nlayers':
@@ -34,10 +35,12 @@ def read_master_input():
             emax = float(split_line[2])
         elif split_line[0] == 'seedname':
             seedname = split_line[1]
+        elif split_line[0] == 'figsize':
+            fig_dimensions = (float(split_line[1]), float(split_line[2]))
     f.close()
     energy_array = np.arange(emin - fermi_level, emax - fermi_level,
                              energy_step)
-    return nlayers, fermi_level, energy_array, seedname
+    return nlayers, fermi_level, energy_array, seedname, fig_dimensions
 
 
 def read_nnkp(seedname):
@@ -99,7 +102,7 @@ def read_spectral_function(seedname, nene, nkp, nlayers):
     return spectral_function
 
 
-def plot_spectra(layer, spectral_function, klist, omegas, seedname):
+def plot_spectra(layer, spectral_function, klist, omegas, seedname, fig_dims):
     # Layer 0 means plot the sum of all the layer contribution,
     # otherwise you can specify which layer you want to plot.
     if layer == 0:
@@ -108,7 +111,7 @@ def plot_spectra(layer, spectral_function, klist, omegas, seedname):
     else:
         fig_title = f'Layer = {layer}'
         filename = f'{seedname}_layer_{layer}.png'
-    fig = plt.figure(figsize=(3, 6))
+    fig = plt.figure(figsize=fig_dims)
     ax = fig.add_subplot(1, 1, 1)
     yy, xx = np.meshgrid(omegas, klist)
     ax.pcolormesh(xx, yy, spectral_function[:, layer, :], shading='gouraud',
@@ -122,12 +125,13 @@ def plot_spectra(layer, spectral_function, klist, omegas, seedname):
 
 def main():
     layer_index = read_layer_index()
-    nlayers, efermi, energy_array, seedname = read_master_input()
+    nlayers, efermi, energy_array, seedname, fig_dims = read_master_input()
     kdists = read_kpoints(seedname)
     nkp = len(kdists)
     nene = len(energy_array)
     spectral_function = read_spectral_function(seedname, nene, nkp, nlayers)
-    plot_spectra(layer_index, spectral_function, kdists, energy_array, seedname)
+    plot_spectra(layer_index, spectral_function, kdists, energy_array, 
+                 seedname, fig_dims)
 
 
 if __name__ == '__main__':
