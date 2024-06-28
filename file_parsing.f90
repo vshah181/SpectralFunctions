@@ -45,7 +45,7 @@ contains
             else if(trim(adjustl(label)) .eq. 'broadening_factor') then
                 read(ival, *) eta
             else if(trim(adjustl(label)) .eq. 'direction') then
-                read(ival, *) eta
+                read(ival, *) direction 
             else if(trim(adjustl(label)) .eq. 'e_fermi') then
                 read(ival, *) e_fermi
                 e_fermi_present = .true.
