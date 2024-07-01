@@ -19,6 +19,7 @@ Plot the surface-pojected spectral functions of wannier90 _hr.dat files using Fo
 5. The energy range in which to compute the spectral function
 6. The broading factor
 7. The step size in electronvolts for the energy window
+8. The output figure size in inches (this will only be read by the python script)
 ### Example
     seedname           EuPb
     nlayers            30
