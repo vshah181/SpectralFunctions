@@ -1,7 +1,7 @@
 subroutine ft_ham_r(num_bands, k, k_ham, r_list, weights, r_ham_list, num_r_pts,&
     nlayers)
 use constants, only : tau
-use file_parsing, only: id => direction
+use file_parsing, only : id => direction
 implicit none
     complex*16, intent(out) :: k_ham(num_bands*nlayers, num_bands*nlayers)
     complex*16, intent(in) :: r_ham_list(num_r_pts, num_bands, num_bands)

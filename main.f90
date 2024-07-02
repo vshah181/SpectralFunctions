@@ -17,7 +17,8 @@ implicit none
 
     call read_kpoints ! nkpath, high_sym_pts, nkpt_per_path
     call read_hr ! r_list, r_ham_list, weights, num_r_pts, num_bands, nlayers
-    call read_potential !potential
+    call read_potential ! potential
+    call read_vector_potential ! vector_potential
 
     nene=int((emax-emin)/de)
     tot_bands=num_bands*nlayers
@@ -44,6 +45,7 @@ implicit none
         ibeg=extra+ibeg
         iend=ibeg+(nkp/ncpus)-1
     end if
+    call add_vector_potential(num_r_pts, r_list, num_bands, r_ham_list)
     do ik=ibeg, iend
         call ft_ham_r(num_bands, kp(ik, :), kham, r_list, weights, r_ham_list, &
             num_r_pts, nlayers)

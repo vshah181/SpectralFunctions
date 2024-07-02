@@ -6,7 +6,7 @@ private
     character(len=22), parameter :: kpt_file="kpoints", input_file='INPUT'
     complex*16, allocatable :: r_ham_list(:, :, :)
     real*8, allocatable :: high_sym_pts(:, :), potential(:)
-    real*8 :: bvec(3, 3)
+    real*8 :: bvec(3, 3), vector_potential(3)
     real*8 :: e_fermi, emin, emax, de, eta
     integer, allocatable :: r_list(:, :), weights(:)
     character, allocatable :: high_sym_pt_symbols(:)
@@ -15,7 +15,7 @@ private
     public num_bands, num_r_pts, weights, r_list, r_ham_list, read_hr,         &
            write_spec_func, high_sym_pts, nkpath, nkpt_per_path, read_kpoints, &
            read_potential, nlayers, basis, bvec, emin, emax, de, eta,          &
-           potential, direction
+           potential, direction, vector_potential, read_vector_potential
 contains
     subroutine read_input
         character(len=99) :: label, ival, line, temp_line
@@ -117,6 +117,37 @@ contains
         end do
         close(114)
     end subroutine read_potential
+
+    subroutine read_vector_potential
+        use constants, only : pi, reduced_planck_constant_ev, tau
+        integer :: eof, i
+        character(len=99) :: label, ival, line, temp_line
+        real*8 :: phase_shift, omega, a_0, time
+        open(115, file='vector_potential.dat')
+        do while(eof .ne. iostat_end)
+            read(115, '(a)', iostat=eof) line
+            temp_line=adjustl(line)
+            i=index(temp_line, ' ')
+            label=temp_line(1:i)
+            ival=temp_line(1+i:99)
+            if(trim(adjustl(label)) .eq. 'phase_shift/pi') then
+                read(ival, *) phase_shift
+            else if(trim(adjustl(label)) .eq. 'A_0') then
+                read(ival, *) a_0
+            else if(trim(adjustl(label)) .eq. 'hbar*omega') then
+                read(ival, *) omega
+            else if(trim(adjustl(label)) .eq. 'time/period') then
+                read(ival, *) time
+            end if
+        end do
+        close(115)
+        omega = omega / reduced_planck_constant_ev ! to get it in hertz
+        phase_shift = phase_shift * pi ! to get it in radians
+        time = (time * omega) / tau ! to get it in seconds
+        vector_potential(1) = a_0 * dcos(omega * time)
+        vector_potential(2) = a_0 * dsin((omega * time) + phase_shift)
+        vector_potential(3) = 0d0
+    end subroutine read_vector_potential
 
 
     subroutine write_spec_func(spec_func, nkp, nene)
