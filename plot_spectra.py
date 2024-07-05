@@ -13,14 +13,6 @@ def read_layer_index():
     return layer_index
 
 
-def make_energy_array(emin, emax, de, efermi):
-    nene = int((emax - emin) / de)
-    energy_window = np.empty(nene)
-    for i in range(nene):
-        energy_window[i] = (emin - efermi) + (i*de)
-    return energy_window
-
-
 def read_master_input():
     f = open('INPUT', 'r')
     nlayers = 0
@@ -46,7 +38,8 @@ def read_master_input():
         elif split_line[0] == 'figsize':
             fig_dimensions = (float(split_line[1]), float(split_line[2]))
     f.close()
-    energy_array = make_energy_array(emin, emax, energy_step, fermi_level)
+    energy_array = np.arange(emin - fermi_level, emax - fermi_level,
+                             energy_step)
     return nlayers, fermi_level, energy_array, seedname, fig_dimensions
 
 
