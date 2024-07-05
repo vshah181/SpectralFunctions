@@ -1,4 +1,4 @@
-subroutine add_vector_potential(num_r_pts, r_list, num_bands, r_ham_list)
+subroutine peierls_substitution(num_r_pts, r_list, num_bands, r_ham_list)
 use file_parsing, only : vector_potential
 implicit none
     integer, intent(in) :: num_r_pts, r_list(num_r_pts, 3), num_bands
@@ -20,4 +20,4 @@ implicit none
         end do
         r_ham_list(ir, :, :) = r_ham
     end do
-end subroutine add_vector_potential
+end subroutine peierls_substitution

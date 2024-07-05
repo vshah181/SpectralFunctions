@@ -136,9 +136,6 @@ contains
                 read(ival, *) a_0
             else if(trim(adjustl(label)) .eq. 'hbar*omega') then
                 read(ival, *) omega
-            else if(trim(adjustl(label)) .eq. 'time/period') then
-                read(ival, *) time
-            end if
         end do
         close(115)
         omega = omega / reduced_planck_constant_ev ! to get it in hertz

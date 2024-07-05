@@ -45,7 +45,7 @@ implicit none
         ibeg=extra+ibeg
         iend=ibeg+(nkp/ncpus)-1
     end if
-    call add_vector_potential(num_r_pts, r_list, num_bands, r_ham_list)
+    call peierls_substitution(num_r_pts, r_list, num_bands, r_ham_list)
     do ik=ibeg, iend
         call ft_ham_r(num_bands, kp(ik, :), kham, r_list, weights, r_ham_list, &
             num_r_pts, nlayers)
