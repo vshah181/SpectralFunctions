@@ -1,4 +1,4 @@
-OBJFILES = constants.o file_parsing.o fourier_transform.o kpath_maker.o greens_function.o main.o energy_window.o add_potential.o
+OBJFILES = constants.o file_parsing.o add_vector_potential.o fourier_transform.o kpath_maker.o greens_function.o main.o energy_window.o add_potential.o
 PROGRAM = spectral_function
 FTN = mpif90
 FFLAGS = -O4 -llapack -lblas -ld_classic
