@@ -2,13 +2,14 @@ program spectral_function
 use mpi
 use file_parsing
 implicit none
+    integer, parameter :: max_order=2
     real*8, allocatable :: kp(:,:), kdists(:), hsym_kdists(:)
-    integer :: nkp, ik, tot_bands, nene
+    integer :: nkp, ik, tot_bands, nene, nf_bands
     integer :: ibeg, iend, pid, ncpus, ierr, extra  ! for mpi
     integer*4 :: info, lwork
     real*8, allocatable :: rwork(:), energies(:, :), omegas(:)
-    complex*16, allocatable :: work(:), kham(:, :), green_func(:, :, :),      &
-        green_func_glob(:, :, :)
+    complex*16, allocatable :: work(:), kham(:, :), green_func(:, :, :),       &
+        green_func_glob(:, :, :), floquet_ham_list(:, :, :)
 
     ! Initialise MPI here
     call MPI_INIT(ierr)
@@ -21,7 +22,8 @@ implicit none
     call read_vector_potential ! vector_potential
 
     nene=int((emax-emin)/de)
-    tot_bands=num_bands*nlayers
+    tot_bands=num_bands*nlayers*(1+(2*max_order))
+    nf_bands=num_bands*(1+(2*max_order))
     nkp=1+(nkpt_per_path*nkpath)
     allocate(kp(nkp, 3), kdists(nkp), hsym_kdists(1+nkpath), omegas(nene))
     call make_kpath(nkpath, high_sym_pts, nkpt_per_path, nkp, kp, kdists,      &
@@ -29,7 +31,10 @@ implicit none
     call make_ene_window(nene, emin, emax, de, omegas)
 
     allocate(energies(nkp, tot_bands), kham(tot_bands, tot_bands),             &
-        green_func(nkp, nlayers, nene), green_func_glob(nkp, nlayers, nene))
+        green_func(nkp, nlayers, nene), green_func_glob(nkp, nlayers, nene),   &
+        floquet_ham_list(num_r_pts, tot_bands, tot_bands))
+    call floquet_expansion(max_order, num_bands, num_r_pts, r_ham_list,        &
+        floquet_ham_list, r_list)
 
     lwork=max(1, 2*tot_bands-1)
     allocate(work(max(1, lwork)), rwork(max(1, 3*tot_bands-2)))
@@ -45,14 +50,13 @@ implicit none
         ibeg=extra+ibeg
         iend=ibeg+(nkp/ncpus)-1
     end if
-    call peierls_substitution(num_r_pts, r_list, num_bands, r_ham_list)
     do ik=ibeg, iend
-        call ft_ham_r(num_bands, kp(ik, :), kham, r_list, weights, r_ham_list, &
+        call ft_ham_r(nf_bands, kp(ik, :), kham, r_list, weights, r_ham_list,  &
             num_r_pts, nlayers)
-        call add_potential(kham, nlayers, num_bands)
+        ! call add_potential(kham, nlayers, num_bands)
         call zheev('V', 'L', tot_bands, kham, tot_bands, energies(ik, :), work,&
             lwork, rwork, info)
-        call greens_function(nene, nlayers, num_bands, omegas, kham,           &
+        call greens_function(nene, nlayers, nf_bands, omegas, kham,            &
             energies(ik, :), eta, green_func(ik, :, :))
     end do
 
