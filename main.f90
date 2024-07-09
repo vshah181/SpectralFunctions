@@ -51,8 +51,8 @@ implicit none
         iend=ibeg+(nkp/ncpus)-1
     end if
     do ik=ibeg, iend
-        call ft_ham_r(nf_bands, kp(ik, :), kham, r_list, weights, r_ham_list,  &
-            num_r_pts, nlayers)
+        call ft_ham_r(nf_bands, kp(ik, :), kham, r_list, weights,              &
+            floquet_ham_list, num_r_pts, nlayers)
         ! call add_potential(kham, nlayers, num_bands)
         call zheev('V', 'L', tot_bands, kham, tot_bands, energies(ik, :), work,&
             lwork, rwork, info)
