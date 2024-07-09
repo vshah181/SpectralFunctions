@@ -18,6 +18,8 @@ implicit none
             icol=(nbands*(abs(m)+m)/2)+1 !1 if -ve m, else (|m|*nbands)+1
             call fourier_coefficient(nbands, r_ham_list(ir, :, :), m, 0d0,     &
                 r_list(ir, :), ham_m)
+            print*, ham_m
+            stop
             do i=1, (max_order-abs(m))+1
                 new_r_ham(irow:irow+nbands-1, icol:icol+nbands-1)=ham_m
                 icol=icol+nbands
