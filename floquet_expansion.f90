@@ -1,12 +1,13 @@
 subroutine floquet_expansion(max_order, nbands, n_r_pts, r_ham_list,           &
     new_r_ham_list, r_list)
+use, intrinsic :: iso_fortran_env, only: real64
 implicit none
     integer, intent(in) :: max_order, nbands, n_r_pts, r_list(n_r_pts, 3)
     integer :: degree
-    complex*16, intent(in) :: r_ham_list(n_r_pts, nbands, nbands)
-    complex*16, intent(out) :: new_r_ham_list(n_r_pts,                         &
+    complex (real64), intent(in) :: r_ham_list(n_r_pts, nbands, nbands)
+    complex (real64), intent(out) :: new_r_ham_list(n_r_pts,                   &
         (1+(max_order*2))*nbands, (1+(max_order*2))*nbands)
-    complex*16 :: new_r_ham((1+(max_order*2))*nbands,                          &
+    complex (real64) :: new_r_ham((1+(max_order*2))*nbands,                    &
         (1+(max_order*2))*nbands), ham_m(nbands, nbands)
     integer :: m, irow, icol, i, ir
 

@@ -1,14 +1,15 @@
 program spectral_function
 use mpi
 use file_parsing
+use, intrinsic :: iso_fortran_env, only: real64, int32
 implicit none
     integer, parameter :: max_order=2
-    real*8, allocatable :: kp(:,:), kdists(:), hsym_kdists(:)
+    real (real64), allocatable :: kp(:,:), kdists(:), hsym_kdists(:)
     integer :: nkp, ik, tot_bands, nene, nf_bands
     integer :: ibeg, iend, pid, ncpus, ierr, extra  ! for mpi
-    integer*4 :: info, lwork
-    real*8, allocatable :: rwork(:), energies(:, :), omegas(:)
-    complex*16, allocatable :: work(:), kham(:, :), green_func(:, :, :),       &
+    integer (int32):: info, lwork
+    real (real64), allocatable :: rwork(:), energies(:, :), omegas(:)
+    complex (real64), allocatable :: work(:), kham(:, :), green_func(:, :, :),&
         green_func_glob(:, :, :), floquet_ham_list(:, :, :)
 
     ! Initialise MPI here
@@ -28,7 +29,7 @@ implicit none
     allocate(kp(nkp, 3), kdists(nkp), hsym_kdists(1+nkpath), omegas(nene))
     call make_kpath(nkpath, high_sym_pts, nkpt_per_path, nkp, kp, kdists,      &
         hsym_kdists)
-    call make_ene_window(nene, emin, emax, de, omegas)
+    call make_ene_window(nene, emin, de, omegas)
 
     allocate(energies(nkp, tot_bands), kham(tot_bands, tot_bands),             &
         green_func(nkp, nlayers, nene), green_func_glob(nkp, nlayers, nene),   &

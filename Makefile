@@ -12,4 +12,4 @@ $(PROGRAM): $(OBJFILES)
 	$(FTN) -c $< -o $@ $(FFLAGS)
 
 clean:
-	rm $(OBJFILES) $(PROGRAM)
+	rm $(OBJFILES) $(PROGRAM) *.mod

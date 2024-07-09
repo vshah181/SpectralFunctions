@@ -1,13 +1,13 @@
 module file_parsing
-use, intrinsic :: iso_fortran_env, only : iostat_end
+use, intrinsic :: iso_fortran_env, only : iostat_end, real64
 implicit none
 private
     character(len=99) :: hr_file, seedname, basis, nnkp_file
     character(len=22), parameter :: kpt_file="kpoints", input_file='INPUT'
-    complex*16, allocatable :: r_ham_list(:, :, :)
-    real*8, allocatable :: high_sym_pts(:, :), potential(:)
-    real*8 :: bvec(3, 3), vector_potential(3)
-    real*8 :: e_fermi, emin, emax, de, eta, phase_shift, omega, a_0
+    complex (real64), allocatable :: r_ham_list(:, :, :)
+    real (real64), allocatable :: high_sym_pts(:, :), potential(:)
+    real (real64) :: bvec(3, 3)
+    real (real64) :: e_fermi, emin, emax, de, eta, phase_shift, omega, a_0
     integer, allocatable :: r_list(:, :), weights(:)
     character, allocatable :: high_sym_pt_symbols(:)
     integer :: num_bands, num_r_pts, nkpt_per_path, nkpath, nlayers, direction
@@ -56,7 +56,7 @@ contains
 
     subroutine read_hr
         integer :: hi_row, hi_col, ir, o_i, o_j
-        real*8 :: rp, ip
+        real (real64) :: rp, ip
 
         call read_input
         call read_nnkp
@@ -119,7 +119,7 @@ contains
     end subroutine read_potential
 
     subroutine read_vector_potential
-        use constants, only : pi, reduced_planck_constant_ev, tau
+        use constants, only : pi, reduced_planck_constant_ev
         integer :: eof, i
         character(len=99) :: label, ival, line, temp_line
         open(115, file='vector_potential.dat')
@@ -145,9 +145,9 @@ contains
 
     subroutine write_spec_func(spec_func, nkp, nene)
         integer, intent(in) :: nene, nkp
-        real*8, intent(in) :: spec_func(nkp, nlayers, nene)
-        integer :: ie, il, ik
-        real*8 :: tot_spec_func(nkp, nene)
+        real (real64), intent(in) :: spec_func(nkp, nlayers, nene)
+        integer :: ie, il
+        real (real64) :: tot_spec_func(nkp, nene)
         character(len=99) :: ofname, fmt_string, nkp_string
 
         tot_spec_func=sum(spec_func, dim=2)

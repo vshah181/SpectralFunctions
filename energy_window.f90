@@ -1,8 +1,9 @@
-subroutine make_ene_window(nene, emin, emax, de, omegas)
+subroutine make_ene_window(nene, emin, de, omegas)
+use, intrinsic :: iso_fortran_env, only: real64 
 implicit none
     integer, intent(in) :: nene
-    real*8, intent(in) :: emin, emax, de
-    real*8, intent(out) :: omegas(nene)
+    real (real64), intent(in) :: emin, de
+    real (real64), intent(out) :: omegas(nene)
     integer :: i
     
     omegas(1) = emin
