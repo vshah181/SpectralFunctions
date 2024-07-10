@@ -6,9 +6,9 @@ implicit none
     integer :: degree
     complex (real64), intent(in) :: r_ham_list(n_r_pts, nbands, nbands)
     complex (real64), intent(out) :: new_r_ham_list(n_r_pts,                   &
-        (1+(max_order*2))*nbands, (1+(max_order*2))*nbands)
-    complex (real64) :: new_r_ham((1+(max_order*2))*nbands,                    &
-        (1+(max_order*2))*nbands), ham_m(nbands, nbands)
+        (1+max_order)*nbands, (1+max_order)*nbands)
+    complex (real64) :: new_r_ham((1+max_order)*nbands, (1+max_order)*nbands), &
+        ham_m(nbands, nbands)
     integer :: m, irow, icol, i, ir
 
     degree=(1+(max_order*2))*nbands
@@ -24,6 +24,6 @@ implicit none
                 irow=irow+nbands
             end do
         end do
-    new_r_ham_list(ir, :, :)=new_r_ham
+        new_r_ham_list(ir, :, :)=new_r_ham
     end do
 end subroutine floquet_expansion

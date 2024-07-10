@@ -22,6 +22,5 @@ implicit none
         *t_ham(nbands, r, (t0+i*(period/n)), r_ham))
     end do
     ham_m=ham_m/n
-
 end subroutine fourier_coefficient
 
