@@ -5,8 +5,8 @@ contains
     function t_ham(nbands, r, time, r_ham) result(ham_t)
     use file_parsing, only : a_0, omega, phase_shift
     implicit none
-        integer, intent(in) :: nbands
-        real (real64), intent(in) :: r(3), time
+        integer, intent(in) :: nbands, r(3)
+        real (real64), intent(in) :: time
         complex (real64), intent(in) :: r_ham(nbands, nbands)
         complex (real64) :: ham_t(nbands, nbands)
         complex (real64) :: element

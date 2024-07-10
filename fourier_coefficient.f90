@@ -5,15 +5,15 @@ use peierls_substitution, only: t_ham
 use, intrinsic :: iso_fortran_env, only: real64 
 implicit none
     integer, parameter :: n=500
-    integer, intent(in) :: nbands, m
-    real (real64), intent(in) :: t0, r(3)
+    integer, intent(in) :: nbands, m, r(3)
+    real (real64), intent(in) :: t0
     complex (real64), intent(in) :: r_ham(nbands, nbands)
     integer :: i
     real (real64) :: period
     complex (real64), intent(out) :: ham_m(nbands, nbands)
     
     period=tau/omega
-! Integrate using the trapezium rule between t0 and t0+(2pi/omega)
+    ! Integrate using the trapezium rule between t0 and t0+(2pi/omega)
     ham_m=0.5d0*(zexp(dcmplx(0d0, -m*omega*t0))*t_ham(nbands, r, t0, r_ham)    &
                +zexp(dcmplx(0d0, -m*omega*(t0+period)))*t_ham(nbands, r,       &
                                                              t0+period, r_ham))
