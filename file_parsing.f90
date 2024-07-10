@@ -10,18 +10,21 @@ private
     real (real64) :: e_fermi, emin, emax, de, eta, phase_shift, omega, a_0
     integer, allocatable :: r_list(:, :), weights(:)
     character, allocatable :: high_sym_pt_symbols(:)
-    integer :: num_bands, num_r_pts, nkpt_per_path, nkpath, nlayers, direction
-    logical :: e_fermi_present
-    public num_bands, num_r_pts, weights, r_list, r_ham_list, read_hr,         &
+    integer :: num_bands, num_r_pts, nkpt_per_path, nkpath, nlayers, direction,&
+        max_order
+    logical :: e_fermi_present, do_floquet
+    public num_bands, num_r_pts, weights, r_list, r_ham_list, read_hr, eta, de,&
            write_spec_func, high_sym_pts, nkpath, nkpt_per_path, read_kpoints, &
-           read_potential, nlayers, basis, bvec, emin, emax, de, eta,          &
-           potential, direction, read_vector_potential, a_0, omega, phase_shift
+           read_potential, nlayers, basis, bvec, emin, emax, do_floquet, a_0,  &
+           potential, direction, read_vector_potential, omega, max_order, &
+           phase_shift
 contains
     subroutine read_input
         character(len=99) :: label, ival, line, temp_line
-        integer :: i, eof
+        integer :: i, eof, floquet_switch
         open(110, file=input_file)
         e_fermi_present = .false.
+        do_floquet = .false.
         e_fermi = 0d0
         do while(eof .ne. iostat_end)
             read(110, '(a)', iostat=eof) line
@@ -49,6 +52,9 @@ contains
             else if(trim(adjustl(label)) .eq. 'e_fermi') then
                 read(ival, *) e_fermi
                 e_fermi_present = .true.
+            else if(trim(adjustl(label)) .eq. 'floquet') then
+                read(ival, *) floquet_switch
+                if(floquet_switch .eq. 1) do_floquet=.true.
             end if
         end do
         close(110)
@@ -135,6 +141,8 @@ contains
                 read(ival, *) a_0
             else if(trim(adjustl(label)) .eq. 'hbar*omega') then
                 read(ival, *) omega
+            else if(trim(adjustl(label)) .eq. 'max_order') then
+                read(ival, *) max_order
             end if
         end do
         close(115)

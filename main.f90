@@ -3,13 +3,12 @@ use mpi
 use file_parsing
 use, intrinsic :: iso_fortran_env, only: real64, int32
 implicit none
-    integer, parameter :: max_order=2
     real (real64), allocatable :: kp(:,:), kdists(:), hsym_kdists(:)
     integer :: nkp, ik, tot_bands, nene, nf_bands
     integer :: ibeg, iend, pid, ncpus, ierr, extra  ! for mpi
     integer (int32):: info, lwork
     real (real64), allocatable :: rwork(:), energies(:, :), omegas(:)
-    complex (real64), allocatable :: work(:), kham(:, :), green_func(:, :, :),&
+    complex (real64), allocatable :: work(:), kham(:, :), green_func(:, :, :), &
         green_func_glob(:, :, :), floquet_ham_list(:, :, :)
 
     ! Initialise MPI here
@@ -19,8 +18,10 @@ implicit none
 
     call read_kpoints ! nkpath, high_sym_pts, nkpt_per_path
     call read_hr ! r_list, r_ham_list, weights, num_r_pts, num_bands, nlayers
+                 ! do_floquet, max_order
     call read_potential ! potential
-    call read_vector_potential ! vector_potential
+    max_order=0
+    if(do_floquet) call read_vector_potential ! vector_potential
 
     nene=int((emax-emin)/de)
     tot_bands=num_bands*nlayers*(1+(2*max_order))
