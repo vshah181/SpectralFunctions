@@ -90,11 +90,11 @@ def read_kpoints(seedname):
     return kdists
 
 
-def read_spectral_function(seedname, nene, nkp, nlayers):
-    spectral_function = np.empty([nkp, 1 + nlayers, nene])
+def read_spectral_function(seedname, nene, nkp, required_layer):
+    spectral_function = np.empty([nkp, nene])
     filename = seedname + '_spec_func.dat'
-    layer = 1
     f = open(filename, 'r')
+    layer = -2  # Condition for if statement not automatically satisfied
     for line in f:
         empty_line = (line == ' \n')
         if not (empty_line) and line.split()[0] == 'layer=':
@@ -103,8 +103,10 @@ def read_spectral_function(seedname, nene, nkp, nlayers):
             except ValueError:
                 if line.split()[1] == 'all':
                     layer = 0
-            for i in range(nene):
-                spectral_function[:, layer, i] = f.readline().split()
+            if layer == required_layer:
+                print(f"We are at layer {layer}; we want to plot layer {required_layer}")
+                for i in range(nene):
+                    spectral_function[:, i] = f.readline().split()
     f.close()
     return spectral_function
 
@@ -121,8 +123,8 @@ def plot_spectra(layer, spectral_function, klist, omegas, seedname, fig_dims):
     fig = plt.figure(figsize=fig_dims)
     ax = fig.add_subplot(1, 1, 1)
     yy, xx = np.meshgrid(omegas, klist)
-    ax.pcolormesh(xx, yy, spectral_function[:, layer, :], shading='gouraud',
-                  cmap='Purples', norm='log')
+    ax.pcolormesh(xx, yy, spectral_function[:, :], shading='gouraud',
+                  norm='log', cmap='Purples')
     ax.set_title(fig_title)
     ax.set_ylabel(r'$E - E_F$ (eV)')
     ax.set_xlabel(r'$k (\AA^{-1})$')
@@ -136,7 +138,7 @@ def main():
     kdists = read_kpoints(seedname)
     nkp = len(kdists)
     nene = len(energy_array)
-    spectral_function = read_spectral_function(seedname, nene, nkp, nlayers)
+    spectral_function = read_spectral_function(seedname, nene, nkp, layer_index)
     plot_spectra(layer_index, spectral_function, kdists, energy_array, 
                  seedname, fig_dims)
 
