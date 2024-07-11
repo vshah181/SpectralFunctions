@@ -14,7 +14,7 @@ implicit none
     
     period=tau/omega
     ! Integrate using the trapezium rule between t0 and t0+(2pi/omega)
-    ham_m=0.5d0*(exp(cmplx(0d0, -m*omega*t0), kind=real64)*t_ham(nbands, r, t0,&
+    ham_m=0.5d0*(exp(cmplx(0d0, -m*omega*t0, kind=real64))*t_ham(nbands, r, t0,&
                  r_ham)+exp(cmplx(0d0, -m*omega*(t0+period), kind=real64))     &
                  *t_ham(nbands, r, t0+period, r_ham))
     do i=1, n-1
