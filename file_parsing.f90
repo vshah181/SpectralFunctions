@@ -78,7 +78,7 @@ contains
                 do o_j=1, num_bands
                     read(111, *)r_list(ir, 1), r_list(ir, 2), r_list(ir, 3),   &
                               hi_row, hi_col, rp, ip
-                    r_ham_list(ir, hi_row, hi_col)=dcmplx(rp, ip)  
+                    r_ham_list(ir, hi_row, hi_col)=cmplx(rp, ip, kind=real64)  
                 end do
             end do
         end do

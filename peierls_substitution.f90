@@ -20,7 +20,7 @@ contains
         do ib=1, nbands
             do jb=1, nbands
                 element = r_ham(ib, jb)
-                element = element * dcmplx(cos(phase), sin(phase))
+                element = element*cmplx(cos(phase), sin(phase), kind=real64)
                 ham_t(ib, jb) = element
             end do
         end do

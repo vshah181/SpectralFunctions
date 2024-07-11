@@ -23,8 +23,8 @@ implicit none
         do il=1, nlayers-int(abs(r(id)))
             k_ham(irow:irow+num_bands-1, icol:icol+num_bands-1)=               &
             k_ham(irow:irow+num_bands-1, icol:icol+num_bands-1)+               &
-            (r_ham_list(ir, :, :)*dcmplx(cos(phase),                           &
-            sin(phase)))/weights(ir)
+            (r_ham_list(ir, :, :)*cmplx(cos(phase),                            &
+            sin(phase), kind=real64))/weights(ir)
             irow=irow+num_bands
             icol=icol+num_bands
         end do
