@@ -4,8 +4,9 @@ use file_parsing
 use, intrinsic :: iso_fortran_env, only: real64, int32
 implicit none
     real (real64), allocatable :: kp(:,:), kdists(:), hsym_kdists(:)
-    integer :: nkp, ik, tot_bands, nene, nf_bands
+    integer :: nkp, ik, tot_bands, nene, nf_bands, nkpar, ip
     integer :: ibeg, iend, pid, ncpus, ierr, extra  ! for mpi
+    integer, allocatable :: sendcounts(:), displs(:)! for mpi
     integer (int32):: info, lwork
     real (real64), allocatable :: rwork(:), energies(:, :), omegas(:)
     complex (real64), allocatable :: work(:), kham(:, :), green_func(:, :, :), &
@@ -15,6 +16,8 @@ implicit none
     call MPI_INIT(ierr)
     call MPI_COMM_SIZE(MPI_COMM_WORLD, ncpus, ierr)
     call MPI_COMM_RANK(MPI_COMM_WORLD, pid, ierr)
+    ! Only the root process (0) needs the displs and sendcounts arrays
+    if (pid .eq. 0) allocate(displs(ncpus), sendcounts(ncpus))
 
     call read_kpoints ! nkpath, high_sym_pts, nkpt_per_path
     call read_hr ! r_list, r_ham_list, weights, num_r_pts, num_bands, nlayers
@@ -38,15 +41,32 @@ implicit none
         ibeg=extra+ibeg
         iend=ibeg+(nkp/ncpus)-1
     end if
+    nkpar=(iend-(ibeg-1))
 
     allocate(kp(nkp, 3), kdists(nkp), hsym_kdists(1+nkpath), omegas(nene))
     call make_kpath(nkpath, high_sym_pts, nkpt_per_path, nkp, kp, kdists,      &
         hsym_kdists)
     call make_ene_window(nene, emin, de, omegas)
 
-    allocate(energies(nkp, tot_bands), kham(tot_bands, tot_bands),             &
-        green_func(nkp, nlayers, nene), green_func_glob(nkp, nlayers, nene),   &
-        floquet_ham_list(num_r_pts, tot_bands, tot_bands))
+    if (pid .eq. 0) allocate(green_func_glob(nkp, nlayers, nene))
+    ! Only the root process needs the recvbuf array
+
+    ! Create the arrays required by MPI_GATHERV
+    if (pid .eq. 0) then
+        displs(1)=0
+        do ip=1, ncpus
+            if (ip .gt. extra) then
+                sendcounts(ip)=(nkp/ncpus)*nene*nlayers
+            else
+                sendcounts(ip)=(1+(nkp/ncpus))*nene*nlayers
+            end if
+            if (ip .lt. ncpus) displs(1+ip)=displs(ip)+sendcounts(ip)
+        end do
+    end if
+
+    allocate(energies(nkpar, tot_bands), kham(tot_bands, tot_bands),           &
+        green_func(nkpar, nlayers, nene), floquet_ham_list(num_r_pts,          &
+        tot_bands, tot_bands))
     call floquet_expansion(max_order, num_bands, num_r_pts, r_ham_list,        &
         floquet_ham_list, r_list)
 
@@ -57,15 +77,16 @@ implicit none
         call ft_ham_r(nf_bands, kp(ik, :), kham, r_list, weights,              &
             floquet_ham_list, num_r_pts, nlayers)
         ! call add_potential(kham, nlayers, num_bands)
-        call zheev('V', 'L', tot_bands, kham, tot_bands, energies(ik, :), work,&
-            lwork, rwork, info)
+        call zheev('V', 'L', tot_bands, kham, tot_bands, energies(ik-(ibeg-1), &
+            :), work, lwork, rwork, info)
         call greens_function(nene, nlayers, nf_bands, omegas, kham,            &
-            energies(ik, :), eta, green_func(ik, :, :))
+            energies(ik-(ibeg-1), :), eta, green_func(ik-(ibeg-1), :, :))
+        ! ik-(ibeg-1) exists so that it always starts at index 1
     end do
 
-    call MPI_REDUCE(green_func, green_func_glob, nkp*nlayers*nene,             &
-        MPI_DOUBLE_COMPLEX, MPI_SUM, 0, MPI_COMM_WORLD, ierr)
+    call MPI_GATHERV(green_func, nkpar*nlayers*nene, MPI_DOUBLE_COMPLEX,       &
+        green_func_glob, sendcounts, displs, MPI_DOUBLE_COMPLEX, 0,            &
+        MPI_COMM_WORLD, ierr)
     if (pid .eq. 0) call write_spec_func(dimag(green_func_glob), nkp, nene)
     call MPI_FINALIZE(ierr)
-    !TODO Change this to MPI_GatherV in order to decrease memory usage
 end program spectral_function
