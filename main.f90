@@ -27,6 +27,18 @@ implicit none
     tot_bands=num_bands*nlayers*(1+(2*max_order))
     nf_bands=num_bands*(1+(2*max_order))
     nkp=1+(nkpt_per_path*nkpath)
+
+    ! Split the kpoints among CPUs
+    extra=mod(nkp, ncpus)
+    ibeg=1+(pid*(nkp/ncpus))
+    if (pid<extra) then
+        ibeg=pid+ibeg
+        iend=ibeg+(nkp/ncpus)
+    else
+        ibeg=extra+ibeg
+        iend=ibeg+(nkp/ncpus)-1
+    end if
+
     allocate(kp(nkp, 3), kdists(nkp), hsym_kdists(1+nkpath), omegas(nene))
     call make_kpath(nkpath, high_sym_pts, nkpt_per_path, nkp, kp, kdists,      &
         hsym_kdists)
@@ -41,17 +53,6 @@ implicit none
     lwork=max(1, 2*tot_bands-1)
     allocate(work(max(1, lwork)), rwork(max(1, 3*tot_bands-2)))
 
-    ! Split the kpoints among CPUs
-    extra=mod(nkp, ncpus)
-
-    ibeg=1+(pid*(nkp/ncpus))
-    if (pid<extra) then
-        ibeg=pid+ibeg
-        iend=ibeg+(nkp/ncpus)
-    else
-        ibeg=extra+ibeg
-        iend=ibeg+(nkp/ncpus)-1
-    end if
     do ik=ibeg, iend
         call ft_ham_r(nf_bands, kp(ik, :), kham, r_list, weights,              &
             floquet_ham_list, num_r_pts, nlayers)
@@ -66,4 +67,5 @@ implicit none
         MPI_DOUBLE_COMPLEX, MPI_SUM, 0, MPI_COMM_WORLD, ierr)
     if (pid .eq. 0) call write_spec_func(dimag(green_func_glob), nkp, nene)
     call MPI_FINALIZE(ierr)
+    !TODO Change this to MPI_GatherV in order to decrease memory usage
 end program spectral_function
