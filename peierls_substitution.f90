@@ -13,14 +13,14 @@ contains
         integer ::  ib, jb
         real (real64) :: phase, vector_potential(3)
     
-        vector_potential(1)=a_0*dcos(time*omega)
-        vector_potential(2)=a_0*dsin(phase_shift+(time*omega))
+        vector_potential(1)=a_0*cos(time*omega)
+        vector_potential(2)=a_0*sin(phase_shift+(time*omega))
         vector_potential(3)=0d0
         phase = dot_product(vector_potential, r)
         do ib=1, nbands
             do jb=1, nbands
                 element = r_ham(ib, jb)
-                element = element * dcmplx(dcos(phase), dsin(phase))
+                element = element * dcmplx(cos(phase), sin(phase))
                 ham_t(ib, jb) = element
             end do
         end do

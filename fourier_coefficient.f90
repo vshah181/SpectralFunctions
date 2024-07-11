@@ -14,11 +14,11 @@ implicit none
     
     period=tau/omega
     ! Integrate using the trapezium rule between t0 and t0+(2pi/omega)
-    ham_m=0.5d0*(zexp(dcmplx(0d0, -m*omega*t0))*t_ham(nbands, r, t0, r_ham)    &
-               +zexp(dcmplx(0d0, -m*omega*(t0+period)))*t_ham(nbands, r,       &
+    ham_m=0.5d0*(exp(dcmplx(0d0, -m*omega*t0))*t_ham(nbands, r, t0, r_ham)     &
+               +exp(dcmplx(0d0, -m*omega*(t0+period)))*t_ham(nbands, r,        &
                                                              t0+period, r_ham))
     do i=1, n-1
-        ham_m=ham_m+(zexp(dcmplx(0, -m*omega*(t0+i*(period/n))))               &
+        ham_m=ham_m+(exp(dcmplx(0, -m*omega*(t0+i*(period/n))))                &
         *t_ham(nbands, r, (t0+i*(period/n)), r_ham))
     end do
     ham_m=ham_m/n
