@@ -104,7 +104,6 @@ def read_spectral_function(seedname, nene, nkp, required_layer):
                 if line.split()[1] == 'all':
                     layer = 0
             if layer == required_layer:
-                print(f"We are at layer {layer}; we want to plot layer {required_layer}")
                 for i in range(nene):
                     spectral_function[:, i] = f.readline().split()
     f.close()
