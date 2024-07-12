@@ -153,27 +153,17 @@ contains
 
     subroutine write_spec_func(spec_func, nkp, nene)
         integer, intent(in) :: nene, nkp
-        real (real64), intent(in) :: spec_func(nkp, nlayers, nene)
+        real (real64), intent(in) :: spec_func(nene*nkp*nlayers)
         integer :: ie, il
         real (real64) :: tot_spec_func(nkp, nene)
         character(len=99) :: ofname, fmt_string, nkp_string
 
-        tot_spec_func=sum(spec_func, dim=2)
         write(ofname, '(2a)') trim(adjustl(seedname)), '_spec_func.dat'
-        write(nkp_string, '(i10)') nkp
-        write(fmt_string, '(3a)') '(', trim(adjustl(nkp_string)), '(1x,es19.9))'
+        print*, 'Writing output to: ', trim(adjustl(ofname))
+        write(nkp_string, '(i10)') nkp*nene*nlayers
+        write(fmt_string, '(3a)') '(', trim(adjustl(nkp_string)), '(1x,es16.9))'
         open (201, file=trim(adjustl(ofname)))
-        do il=1, nlayers
-            write(201, fmt='(a,i6)') 'layer= ', il
-            do ie=1, nene
-                write(201, fmt_string) spec_func(:, il, ie)
-            end do
-            write(201, fmt='(a)') ' '
-        end do
-        write(201, fmt='(a)') 'layer= all'
-        do ie=1, nene
-            write(201, fmt_string) tot_spec_func(:, ie)
-        end do
+        write(201, fmt_string) spec_func(:)
         close(201)
     end subroutine write_spec_func
 
