@@ -91,7 +91,6 @@ def read_kpoints(seedname):
 
 
 def read_spectral_function(seedname, nene, nkp, nlayers):
-    spectral_function = np.empty([nlayers, nene, nkp])
     filename = seedname + '_spec_func.dat'
     spectral_function_1d = np.loadtxt(filename)
     spectral_function = np.reshape(spectral_function_1d, (nlayers, nene, nkp),
@@ -114,7 +113,7 @@ def plot_spectra(layer, spectral_function, klist, omegas, seedname, fig_dims):
     ax = fig.add_subplot(1, 1, 1)
     yy, xx = np.meshgrid(omegas, klist)
     ax.pcolormesh(xx, yy, plot_func[:, :], shading='gouraud',
-                  norm='log', cmap='inferno')
+                  norm='log', cmap='Purples')
     ax.set_title(fig_title)
     ax.set_ylabel(r'$E - E_F$ (eV)')
     ax.set_xlabel(r'$k (\AA^{-1})$')
