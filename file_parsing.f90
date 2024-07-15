@@ -154,16 +154,15 @@ contains
     subroutine write_spec_func(spec_func, nkp, nene)
         integer, intent(in) :: nene, nkp
         real (real64), intent(in) :: spec_func(nene*nkp*nlayers)
-        integer :: ie, il
-        real (real64) :: tot_spec_func(nkp, nene)
-        character(len=99) :: ofname, fmt_string, nkp_string
+        integer :: i
+        character(len=99) :: ofname
 
         write(ofname, '(2a)') trim(adjustl(seedname)), '_spec_func.dat'
         print*, 'Writing output to: ', trim(adjustl(ofname))
-        write(nkp_string, '(i10)') nkp*nene*nlayers
-        write(fmt_string, '(3a)') '(', trim(adjustl(nkp_string)), '(1x,es16.9))'
         open (201, file=trim(adjustl(ofname)))
-        write(201, fmt_string) spec_func(:)
+        do i=1, nene*nlayers*nkp
+            write(201, *) spec_func(i)
+        end do
         close(201)
     end subroutine write_spec_func
 
