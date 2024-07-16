@@ -1,15 +1,18 @@
 import numpy as np
+import sys
 import matplotlib.pyplot as plt
 
 
-def read_layer_index():
-    user_input = input('Enter the layer for projection '
-                       '(enter \'all\' for sum of all layers): ')
+def read_layer_index(nlayers, min_layers):
+    user_input = input('Enter the layer for projection: ')
+                       
     try:
         layer_index = int(user_input)
+        if layer_index > nlayers or layer_index < min_layers:
+            sys.exit('FATAL ERROR: Input is out of range. Must be greater '\
+                    f'than {min_layers-1} and less than {nlayers+1}.')
     except ValueError:
-        if str(user_input).upper() == 'ALL':
-            layer_index = 0
+        sys.exit('FATAL ERROR: Input is not a number.')
     return layer_index
 
 
@@ -98,21 +101,22 @@ def read_spectral_function(seedname, nene, nkp, nlayers):
     return spectral_function
 
 
-def plot_spectra(layer, spectral_function, klist, omegas, seedname, fig_dims):
-    # Layer 0 means plot the sum of all the layer contribution,
-    # otherwise you can specify which layer you want to plot.
-    if layer == 0:
-        fig_title = 'All layers'
-        filename = f'{seedname}_layer_all.png'
-        plot_func = (np.sum(spectral_function, axis=0)).T
+def plot_spectra(layer1, layer2, spectral_function, klist, omegas, seedname,
+                 fig_dims):
+    if layer1 != layer2:
+        fig_title = f'Layer = {layer1}-{layer2}'
+        filename = f'{seedname}_layer_{layer1}-{layer2}.png'
+        plot_func = (np.sum(spectral_function[layer1-1:layer2, :, :], axis=0))
     else:
+        layer = layer2
         fig_title = f'Layer = {layer}'
         filename = f'{seedname}_layer_{layer}.png'
-        plot_func = spectral_function[layer - 1, :, :].T
+        plot_func = spectral_function[layer - 1, :, :]
     fig = plt.figure(figsize=fig_dims)
     ax = fig.add_subplot(1, 1, 1)
     yy, xx = np.meshgrid(omegas, klist)
-    ax.pcolormesh(xx, yy, plot_func[:, :], shading='gouraud',
+    print('Drawing plot...')
+    ax.pcolormesh(xx, yy, plot_func[:, :].T, shading='gouraud',
                   norm='log', cmap='Purples')
     ax.set_title(fig_title)
     ax.set_ylabel(r'$E - E_F$ (eV)')
@@ -122,14 +126,20 @@ def plot_spectra(layer, spectral_function, klist, omegas, seedname, fig_dims):
 
 
 def main():
-    layer_index = read_layer_index()
+    # Initialise all the variables from the input files
     nlayers, efermi, energy_array, seedname, fig_dims = read_master_input()
     kdists = read_kpoints(seedname)
     nkp = len(kdists)
     nene = len(energy_array)
+
+    print('Reading input file...')
     spectral_function = read_spectral_function(seedname, nene, nkp, nlayers)
-    plot_spectra(layer_index, spectral_function, kdists, energy_array, 
-                 seedname, fig_dims)
+
+    # Figure out which layers we are going to make a plot for
+    layer_index1 = read_layer_index(nlayers, 1)
+    layer_index2 = read_layer_index(nlayers, layer_index1)
+    plot_spectra(layer_index1, layer_index2, spectral_function, kdists,
+                 energy_array, seedname, fig_dims)
 
 
 if __name__ == '__main__':
