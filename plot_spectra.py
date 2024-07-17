@@ -174,12 +174,12 @@ def main():
     nkp = len(kdists)
     nene = len(energy_array)
 
-    print('Reading input file...')
-    spectral_function = read_spectral_function(seedname, nene, nkp, nlayers)
-
     # Figure out which layers we are going to make a plot for
     layer_index1 = read_layer_index(nlayers, 1)
     layer_index2 = read_layer_index(nlayers, layer_index1)
+
+    print('Reading input file...')
+    spectral_function = read_spectral_function(seedname, nene, nkp, nlayers)
     plot_spectra(layer_index1, layer_index2, spectral_function, kdists,
                  energy_array, seedname, fig_dims)
 
