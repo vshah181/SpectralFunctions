@@ -125,8 +125,9 @@ contains
     end subroutine read_potential
 
     subroutine read_vector_potential
-        use constants, only : pi, reduced_planck_constant_ev
+        use constants, only : pi, reduced_planck_constant_ev, tau
         integer :: eof, i
+        real (real64) :: s
         character(len=99) :: label, ival, line, temp_line
         open(115, file='vector_potential.dat')
         do while(eof .ne. iostat_end)
@@ -137,8 +138,8 @@ contains
             ival=temp_line(1+i:99)
             if(trim(adjustl(label)) .eq. 'phase_shift/pi') then
                 read(ival, *) phase_shift
-            else if(trim(adjustl(label)) .eq. 'A_0') then
-                read(ival, *) a_0
+            else if(trim(adjustl(label)) .eq. 's') then
+                read(ival, *) s
             else if(trim(adjustl(label)) .eq. 'hbar*omega') then
                 read(ival, *) omega
             else if(trim(adjustl(label)) .eq. 'max_order') then
@@ -148,6 +149,7 @@ contains
         close(115)
         omega = omega / reduced_planck_constant_ev ! to get it in hertz
         phase_shift = phase_shift * pi ! to get it in radians
+        a_0 = (2*reduced_planck_constant_ev*s)/(tau/norm2(bvec(1, :)))
     end subroutine read_vector_potential
 
 
