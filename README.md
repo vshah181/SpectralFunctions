@@ -63,5 +63,10 @@ In this example, there are 200 kpoints in total and we go along the X - $\Gamma$
     phase_shift/pi  0.0
     max_order       2
 
-### NOTE: 
-The python script requires numpy and matplotlib to work properly.
+# Dependancy List
+- Fortran compiler (ifort recommended. Also tested on gnu compiler)
+- Blas and lapack implementation (intel math kernel library recommended)
+- MPI implementation (mpich or OpenMPI)
+- Python >= 3.10.1
+- Numpy
+- Matplotlib
