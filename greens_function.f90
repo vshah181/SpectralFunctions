@@ -1,8 +1,8 @@
 subroutine greens_function(nene, nlayers, num_bands, omegas, eigkets, eigvals, &
-    eta, green_func)
+    eta, green_func, order)
 use, intrinsic :: iso_fortran_env, only: real64 
 implicit none
-    integer, intent(in) :: nlayers, num_bands, nene
+    integer, intent(in) :: nlayers, num_bands, nene, order
     real (real64), intent(in) :: omegas(nene), eigvals(nlayers*num_bands), eta
     complex (real64), intent(in) :: eigkets(nlayers*num_bands,                 &
         nlayers*num_bands)
