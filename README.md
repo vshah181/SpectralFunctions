@@ -52,7 +52,7 @@ In this example, there are 200 kpoints in total and we go along the X - $\Gamma$
 ## vector potential file
 - This file needs the filename 'vector_potential.dat'
 - For cirulary polarised light we assume a vector potential of the form $(a_0\cos(\omega t), a_0 sin(\omega t+\phi), 0.0)$
-- The dimensionless parameter s is used where $s \equiv {e a_0 a \ over 2 \hbar c}$
+- The dimensionless parameter s is used where $s \equiv {e a_0 a \over 2 \hbar c}$
 1. s
 2. hbar*omega (eV)
 3. phi (/pi)
