@@ -63,7 +63,7 @@ In this example, there are 200 kpoints in total and we go along the X - $\Gamma$
     phase_shift/pi  0.0
     max_order       2
 
-# Dependancy List
+# Dependency List
 - Fortran compiler (ifort recommended. Also tested on gnu compiler)
 - Blas and lapack implementation (intel math kernel library recommended)
 - MPI implementation (mpich or OpenMPI)
