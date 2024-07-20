@@ -51,13 +51,14 @@ In this example, there are 200 kpoints in total and we go along the X - $\Gamma$
 
 ## vector potential file
 - This file needs the filename 'vector_potential.dat'
-- For cirulary polarised light we assume a vector potential of the form (a_0*cos(omega*t), a_0*sin(omega*t+phi), 0.0)
-1. A_0
+- For cirulary polarised light we assume a vector potential of the form $(a_0\cos(\omega t), a_0 sin(\omega t+\phi), 0.0)$
+- The dimensionless parameter s is used where $s \equiv {e a_0 a \ over 2 \hbar c}$
+1. s
 2. hbar*omega (eV)
 3. phi (/pi)
 4. maximum order for the floquet expansion
 ### Example
-    A_0             1.0
+    s               1.0
     hbar*omega      2.25
     phase_shift/pi  0.0
     max_order       2
