@@ -1,7 +1,7 @@
 subroutine ft_ham_r(num_bands, k, k_ham, r_list, weights, r_ham_list,          &
     num_r_pts, nlayers)
 use constants, only : tau
-use file_parsing, only : id => direction
+use file_parsing, only : id => direction, bulk
 use, intrinsic :: iso_fortran_env, only: real64 
 implicit none
     integer, intent(in) :: num_r_pts, num_bands, nlayers
@@ -13,20 +13,28 @@ implicit none
     integer :: ir, il, irow, icol
 
     k_ham=0d0
-    do ir=1, num_r_pts
-        r=r_list(ir, :)
-        phase=dot_product(k*tau, r)
-        irow=int((num_bands*(abs(r(id))-r(id))/2)+1)
-        !irow = 1 if +ve z, else irow=|z|*num_bands
-        icol=int((num_bands*(abs(r(id))+r(id))/2)+1)
-        !icol=1 if -ve z, else icol=|z|*num_bands
-        do il=1, nlayers-int(abs(r(id)))
-            k_ham(irow:irow+num_bands-1, icol:icol+num_bands-1)=               &
-            k_ham(irow:irow+num_bands-1, icol:icol+num_bands-1)+               &
-            (r_ham_list(ir, :, :)*cmplx(cos(phase),                            &
-            sin(phase), kind=real64))/weights(ir)
-            irow=irow+num_bands
-            icol=icol+num_bands
+    if(.not. bulk) then
+        do ir=1, num_r_pts
+            r=r_list(ir, :)
+            phase=dot_product(k*tau, r)
+            irow=int((num_bands*(abs(r(id))-r(id))/2)+1)
+            !irow = 1 if +ve z, else irow=|z|*num_bands
+            icol=int((num_bands*(abs(r(id))+r(id))/2)+1)
+            !icol=1 if -ve z, else icol=|z|*num_bands
+            do il=1, nlayers-int(abs(r(id)))
+                k_ham(irow:irow+num_bands-1, icol:icol+num_bands-1)=           &
+                k_ham(irow:irow+num_bands-1, icol:icol+num_bands-1)+           &
+                (r_ham_list(ir, :, :)*cmplx(cos(phase),                        &
+                sin(phase), kind=real64))/weights(ir)
+                irow=irow+num_bands
+                icol=icol+num_bands
+            end do
         end do
-    end do
+    else
+        do ir=1, num_r_pts
+            phase=dot_product(k*tau, r_list(ir, :))
+            k_ham = k_ham + (r_ham_list(ir, :, :) * cmplx(dcos(phase),         &
+                sin(phase), kind=real64) / weights(ir))
+        end do
+    end if
 end subroutine ft_ham_r

@@ -12,19 +12,22 @@ private
     character, allocatable :: high_sym_pt_symbols(:)
     integer :: num_bands, num_r_pts, nkpt_per_path, nkpath, nlayers, direction,&
         max_order
-    logical :: e_fermi_present, do_floquet
+    logical :: e_fermi_present, do_floquet, bulk, bandplot, gfplot
     public num_bands, num_r_pts, weights, r_list, r_ham_list, read_hr, eta, de,&
            write_spec_func, high_sym_pts, nkpath, nkpt_per_path, read_kpoints, &
            read_potential, nlayers, basis, bvec, emin, emax, do_floquet, a_0,  &
-           potential, direction, read_vector_potential, omega, max_order, &
-           phase_shift
+           potential, direction, read_vector_potential, omega, max_order,      &
+           phase_shift, bulk, gfplot, bandplot, write_energies
 contains
     subroutine read_input
         character(len=99) :: label, ival, line, temp_line
-        integer :: i, eof, floquet_switch
+        integer :: i, eof, floquet_switch, bulk_switch, gf_switch, band_switch
         open(110, file=input_file)
         e_fermi_present = .false.
+        bulk=.false.
         do_floquet = .false.
+        gfplot = .false.
+        bandplot = .false.
         e_fermi = 0d0
         do while(eof .ne. iostat_end)
             read(110, '(a)', iostat=eof) line
@@ -38,7 +41,6 @@ contains
                 write(nnkp_file, fmt='(2a)') trim(adjustl(seedname)), '.nnkp'
             else if(trim(adjustl(label)) .eq. 'nlayers') then
                 read(ival, *) nlayers
-                allocate(potential(nlayers))
             else if(trim(adjustl(label)) .eq. 'basis') then
                 read(ival, *) basis
             else if(trim(adjustl(label)) .eq. 'energy_range') then
@@ -55,9 +57,24 @@ contains
             else if(trim(adjustl(label)) .eq. 'floquet') then
                 read(ival, *) floquet_switch
                 if(floquet_switch .eq. 1) do_floquet=.true.
+            else if(trim(adjustl(label)) .eq. 'bulk') then
+                read(ival, *) bulk_switch
+                if(bulk_switch .eq. 1) bulk=.true.
+            else if(trim(adjustl(label)) .eq. 'bands_plot') then
+                read(ival, *) band_switch
+                if(bulk_switch .eq. 1) bandplot=.true.
+            else if(trim(adjustl(label)) .eq. 'spectra_plot') then
+                read(ival, *) gf_switch
+                if(bulk_switch .eq. 1) gfplot=.true.
             end if
         end do
         close(110)
+        if(.not.(gfplot .or. bandplot)) then
+            print*, "You want neither eigenvalues nor spectra? Doing nothing..."
+            stop
+        end if
+        if(.not.(bulk)) nlayers=1
+        allocate(potential(nlayers))
     end subroutine read_input
 
     subroutine read_hr
@@ -167,5 +184,20 @@ contains
         end do
         close(201)
     end subroutine write_spec_func
+
+    subroutine write_energies(energies, nkp, tot_bands)
+        integer, intent(in) :: tot_bands, nkp
+        real (real64), intent(in) :: energies(tot_bands, nkp)
+        integer :: i
+        character(len=99) :: ofname
+
+        write(ofname, '(2a)') trim(adjustl(seedname)), '_eigenval.dat'
+        print*, 'Writing output to: ', trim(adjustl(ofname))
+        open(202, file=trim(adjustl(ofname)))
+            do i=1, nkp
+                write(202, *) energies(:, i)
+            end do
+        close(202)
+    end subroutine write_energies
 
 end module file_parsing
