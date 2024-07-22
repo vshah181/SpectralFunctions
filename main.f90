@@ -89,7 +89,7 @@ implicit none
         call zheev('V', 'L', tot_bands, kham, tot_bands, energies(ik, :),      &
             work, lwork, rwork, info)
         call greens_function(nene, nlayers, nf_bands, omegas, kham,            &
-            energies(ik, :), eta, green_func(ikgfb:ikgfe), order)
+            energies(ik, :), eta, green_func(ikgfb:ikgfe), num_bands)
         if(pid .eq. 0) print*, 'done'
     end do
 

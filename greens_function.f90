@@ -1,8 +1,8 @@
 subroutine greens_function(nene, nlayers, num_bands, omegas, eigkets, eigvals, &
-    eta, green_func, order)
+    eta, green_func, num_orbs)
 use, intrinsic :: iso_fortran_env, only: real64 
 implicit none
-    integer, intent(in) :: nlayers, num_bands, nene, order
+    integer, intent(in) :: nlayers, num_bands, nene, num_orbs
     real (real64), intent(in) :: omegas(nene), eigvals(nlayers*num_bands), eta
     complex (real64), intent(in) :: eigkets(nlayers*num_bands,                 &
         nlayers*num_bands)
@@ -18,7 +18,7 @@ implicit none
             layer_num=1
             do il=1, nlayers*num_bands, num_bands
                 ig=layer_num+(nlayers*(ien-1))
-                numerator=sum(wgt_ket(il:il+(num_bands-1)))
+                numerator=sum(wgt_ket(il:il+(num_orbs-1)))
                 denominator=eigval-omegas(ien)-cmplx(0d0, eta, kind=real64)
                 green_func(ig)=green_func(ig)+(numerator/denominator)
                 layer_num=layer_num+1
