@@ -54,13 +54,14 @@ implicit none
         hsym_kdists)
     call make_ene_window(nene, emin, de, omegas)
 
+    ! Only the root process needs the recvbuf array
     if (pid .eq. 0 .and. gfplot) allocate(green_func_glob(nene*nkp*nlayers))
     if (pid .eq. 0 .and. bandplot) allocate(energies_glob(tot_bands*nkp))
-    ! Only the root process needs the recvbuf array
 
     ! Create the arrays required by MPI_GATHERV
     if (pid .eq. 0) then
         displs(1)=0
+        displs_ene(1)=0
         do ip=1, ncpus
             if (ip .gt. extra) then
                 if(gfplot) sendcounts(ip)=(nkp/ncpus)*nene*nlayers
@@ -69,10 +70,10 @@ implicit none
                 if(gfplot) sendcounts(ip)=(1+(nkp/ncpus))*nene*nlayers
                 if(bandplot) sendcounts_ene(ip)=(1+(nkp/ncpus))*tot_bands
             end if
-            if(ip .lt. ncpus .and. gfplot) displs(1+ip)=displs(ip)             &
-                                                        +sendcounts(ip)
-            if(ip .lt. ncpus .and. bandplot) displs_ene(1+ip)=displs_ene(ip)   &
-                                                        +sendcounts_ene(ip)
+            if(ip .lt. ncpus) then
+                displs(1+ip)=displs(ip)+sendcounts(ip)
+                displs_ene(1+ip)=displs_ene(ip)+sendcounts_ene(ip)
+            end if
         end do
     end if
 
@@ -110,8 +111,8 @@ implicit none
     MPI_DOUBLE_COMPLEX, green_func_glob, sendcounts, displs,                   &
     MPI_DOUBLE_COMPLEX, 0, MPI_COMM_WORLD, ierr)
     if(bandplot) call MPI_GATHERV(energies, nkpar*tot_bands,                   &
-        MPI_DOUBLE_COMPLEX, energies_glob, sendcounts_ene, displs_ene,         &
-        MPI_DOUBLE_COMPLEX, 0, MPI_COMM_WORLD, ierr)
+        MPI_DOUBLE_PRECISION, energies_glob, sendcounts_ene, displs_ene,       &
+        MPI_DOUBLE_PRECISION, 0, MPI_COMM_WORLD, ierr)
 
     if (pid .eq. 0 .and. gfplot) call write_spec_func(dimag(green_func_glob),  &
         nkp, nene)
