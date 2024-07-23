@@ -3,7 +3,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 #TODO This whole script would be better if I made it object-oriented 
-
+plt.rcParams["font.family"] = "Arial"
+plt.rcParams["mathtext.fontset"] = "custom"
+plt.rcParams["mathtext.rm"] = "Arial"
+plt.rcParams["mathtext.it"] = "Arial:italic"
+plt.rcParams["mathtext.bf"] = "Arial:bold"
+plt.rcParams['svg.fonttype'] = 'none'
 def read_layer_index(nlayers, min_layers):
     """
     Read the required layers from the user input.
@@ -218,8 +223,9 @@ def plot_bands(bandstructure, klist, fig_dims, fermi_level, seedname):
         ax.plot(klist, bandstructure[i, :]-fermi_level, color='tab:blue')
     ax.set_ylabel(r'$E - E_F$ (eV)')
     ax.set_xlabel(r'$k (\AA^{-1})$')
+    ax.set_ylim(1.5, 2.4)
     plt.tight_layout()
-    plt.savefig(seedname+'_eigenvals.pdf')
+    plt.savefig(seedname+'_eigenval.pdf')
 
 
 def main():
