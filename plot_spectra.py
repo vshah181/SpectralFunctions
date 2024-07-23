@@ -181,11 +181,20 @@ def plot_spectra(layer1, layer2, spectral_function, klist, omegas, seedname,
 
 
 def plot_bands(bandstructure, klist, fig_dims, fermi_level, seedname):
+    """
+    Plot the band structure
+    :param bandstructure: 2d array. Bands are on the columns
+    :param klist: the x-axis
+    :param fig_dims: dimensions of the figure
+    :param fermi_level: the fermi level
+    :param seedname: nane of the system
+    :return:
+    """
     fig=plt.figure(figsize=fig_dims)
     ax = fig.add_subplot(1, 1, 1)
     num_bands = bandstructure.shape[1]
     for i in range(num_bands):
-        ax.plot(klist, bandstructure[:, i]-fermi_leve, color='tab:blue')
+        ax.plot(klist, bandstructure[:, i]-fermi_level, color='tab:blue')
     ax.set_ylabel(r'$E - E_F$ (eV)')
     ax.set_xlabel(r'$k (\AA^{-1})$')
     plt.tight_layout()
