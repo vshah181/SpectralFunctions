@@ -68,9 +68,9 @@ def read_master_input():
                 seedname = split_line[1]
             elif split_line[0] == 'figsize':
                 fig_dimensions = (float(split_line[1]), float(split_line[2]))
-            elif split_line[0] == 'plot_bands':
+            elif split_line[0] == 'bands_plot':
                 band_swtich = int(split_line[1])
-            elif split_line[0] == 'plot_spectra':
+            elif split_line[0] == 'spectra_plot':
                 gf_swtich = int(split_line[1])
     if band_switch == 1 and gf_switch == 1:
         plotmode = 3
