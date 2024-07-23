@@ -2,6 +2,7 @@ import sys
 import numpy as np
 import matplotlib.pyplot as plt
 
+#TODO This whole script would be better if I made it object-oriented 
 
 def read_layer_index(nlayers, min_layers):
     """
