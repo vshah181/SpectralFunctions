@@ -31,8 +31,8 @@ implicit none
     if(do_floquet) call read_vector_potential ! vector_potential
 
     nene=int((emax-emin)/de)
-    tot_bands=num_bands*nlayers*(1+(2*max_order))
-    nf_bands=num_bands*(1+(2*max_order))
+    tot_bands=num_bands*nlayers*(1+max_order)
+    nf_bands=num_bands*(1+max_order)
     nkp=1+(nkpt_per_path*nkpath)
 
     ! Split the kpoints among CPUs
