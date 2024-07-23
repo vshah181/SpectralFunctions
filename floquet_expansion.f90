@@ -38,6 +38,9 @@ implicit none
             new_r_ham=new_r_ham+frequency_matrix
             new_r_ham_list(ir, :, :)=new_r_ham
         end do
+        do im=1, nbands*(max_order+1)
+            write(400, fmt='(18f7.3)') real(frequency_matrix(im, :))
+        end do
     else
         new_r_ham_list=r_ham_list
     end if

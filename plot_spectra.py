@@ -131,12 +131,13 @@ def read_kpoints(seedname):
         abs_hsym_pts[i, :] = hsym_pts[i, 0] * bvec[0, :] \
                              + hsym_pts[i, 1] * bvec[1, :] \
                              + hsym_pts[i, 2] * bvec[2, :]
+    jk=0
     for i in range(n_hsym_pts - 1):
         abs_kpath = abs_hsym_pts[i + 1, :] - abs_hsym_pts[i, :]
         abs_dk = abs_kpath / kpt_per_path
         for ik in range(kpt_per_path):
-            kdists[ik + 1] = np.linalg.norm(abs_dk) + kdists[ik]
-            ik += 1
+            kdists[jk + 1] = np.linalg.norm(abs_dk) + kdists[jk]
+            jk += 1
     kdists -= kdists[kpt_per_path]
     return kdists
 
@@ -167,6 +168,7 @@ def read_eigenvalues(seedname, nkp):
     eigenvals_1d = np.loadtxt(seedname+'_eigenval.dat')
     num_bands = int(len(eigenvals_1d) / nkp)
     eigenvals = np.reshape(eigenvals_1d, (num_bands, nkp), order='F')
+    np.savetxt('WS2_eigenval_test', eigenvals)
     return eigenvals
 
 
@@ -223,7 +225,6 @@ def plot_bands(bandstructure, klist, fig_dims, fermi_level, seedname):
         ax.plot(klist, bandstructure[i, :]-fermi_level, color='tab:blue')
     ax.set_ylabel(r'$E - E_F$ (eV)')
     ax.set_xlabel(r'$k (\AA^{-1})$')
-    ax.set_ylim(1.5, 2.4)
     plt.tight_layout()
     plt.savefig(seedname+'_eigenval.pdf')
 
