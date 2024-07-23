@@ -62,10 +62,10 @@ contains
                 if(bulk_switch .eq. 1) bulk=.true.
             else if(trim(adjustl(label)) .eq. 'bands_plot') then
                 read(ival, *) band_switch
-                if(bulk_switch .eq. 1) bandplot=.true.
+                if(band_switch .eq. 1) bandplot=.true.
             else if(trim(adjustl(label)) .eq. 'spectra_plot') then
                 read(ival, *) gf_switch
-                if(bulk_switch .eq. 1) gfplot=.true.
+                if(gf_switch .eq. 1) gfplot=.true.
             end if
         end do
         close(110)
@@ -73,7 +73,7 @@ contains
             print*, "You want neither eigenvalues nor spectra? Doing nothing..."
             stop
         end if
-        if(.not.(bulk)) nlayers=1
+        if(bulk) nlayers=1
         allocate(potential(nlayers))
     end subroutine read_input
 

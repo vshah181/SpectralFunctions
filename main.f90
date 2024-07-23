@@ -92,6 +92,7 @@ implicit none
         ikgfb=((ikpar-1)*nlayers*nene)+1
         ikgfe=ikpar*nene*nlayers
         ! ikpar always starts at 1
+        print*, nf_bands, tot_bands
         call ft_ham_r(nf_bands, kp(ik, :), kham, r_list, weights,              &
             floquet_ham_list, num_r_pts, nlayers)
         ! call add_potential(kham, nlayers, num_bands)
