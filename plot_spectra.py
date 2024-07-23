@@ -153,6 +153,12 @@ def read_spectral_function(seedname, nene, nkp, nlayers):
 
 
 def read_eigenvalues(seedname, nkp):
+    """
+    Read the plaintext file with the eigenvalue data
+    :param seedname: the name of the system (string)
+    :param nkp: number of k points - x axis
+    :return: eigenvals: (ndarray(dtype=float))
+    """
     eigenvals_1d = np.loadtxt(seedname+'_eigenval.dat')
     num_bands = int(len(eigenvals_1d) / nkp)
     eigenvals = np.reshape(eigenvals_1d, (num_bands, nkp), order='F')
@@ -197,7 +203,7 @@ def plot_spectra(layer1, layer2, spectral_function, klist, omegas, seedname,
 def plot_bands(bandstructure, klist, fig_dims, fermi_level, seedname):
     """
     Plot the band structure
-    :param bandstructure: 2d array. Bands are on the columns
+    :param bandstructure: 2d array. Bands are the rows.
     :param klist: the x-axis
     :param fig_dims: dimensions of the figure
     :param fermi_level: the fermi level
