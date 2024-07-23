@@ -44,6 +44,7 @@ def read_master_input():
              seedname (string), fig_dimensions (1darray(dtype=float))
     """
     nlayers = 0
+    plotmode = 1
     fermi_level = 0.0
     emin = 0.0
     emax = 0.0
@@ -66,8 +67,19 @@ def read_master_input():
                 seedname = split_line[1]
             elif split_line[0] == 'figsize':
                 fig_dimensions = (float(split_line[1]), float(split_line[2]))
+            elif split_line[0] == 'plot_bands':
+                band_swtich = int(split_line[1])
+            elif split_line[0] == 'plot_spectra':
+                gf_swtich = int(split_line[1])
+    if band_switch == 1 and gf_switch == 1:
+        plotmode = 3
+    elif band_switch == 1 and gf_switch != 1:
+        plotmode = 1
+    elif band_switch != 1 and gf_switch == 1:
+        plotmode = 2
     energy_array = make_energy_array(emin, emax, energy_step, fermi_level)
-    return nlayers, energy_array, seedname, fig_dimensions
+    return nlayers, energy_array, seedname, fig_dimensions, plotmode,
+        fermi_level
 
 
 def read_nnkp(seedname):
@@ -167,21 +179,42 @@ def plot_spectra(layer1, layer2, spectral_function, klist, omegas, seedname,
     plt.savefig(filename, dpi=350)
 
 
+def plot_bands(bandstructure, klist, fig_dims, fermi_level, seedname):
+    fig=plt.figure(figsize=fig_dims)
+    ax = fig.add_subplot(1, 1, 1)
+    num_bands = bandstructure.shape[1]
+    for i in range(num_bands):
+        ax.plot(klist, bandstructure[:, i]-fermi_leve, color='tab:blue')
+    ax.set_ylabel(r'$E - E_F$ (eV)')
+    ax.set_xlabel(r'$k (\AA^{-1})$')
+    plt.tight_layout()
+    plt.savefig(seedname+'_eigenvals.svg')
+
+
 def main():
     # Initialise all the variables from the input files
-    nlayers, energy_array, seedname, fig_dims = read_master_input()
+    nlayers, energy_array, seedname, fig_dims, plotmode, fermi_level 
+        = read_master_input()
+    if plotmode == 0:
+        sys.exit('You want to plot neither bands nor spectral function...'
+                'Quitting the programme...')
     kdists = read_kpoints(seedname)
     nkp = len(kdists)
     nene = len(energy_array)
 
-    # Figure out which layers we are going to make a plot for
-    layer_index1 = read_layer_index(nlayers, 1)
-    layer_index2 = read_layer_index(nlayers, layer_index1)
+    if plotmode != 1:
+        # Figure out which layers we are going to make a plot for
+        layer_index1 = read_layer_index(nlayers, 1)
+        layer_index2 = read_layer_index(nlayers, layer_index1)
 
-    print('Reading input file...')
-    spectral_function = read_spectral_function(seedname, nene, nkp, nlayers)
-    plot_spectra(layer_index1, layer_index2, spectral_function, kdists,
-                 energy_array, seedname, fig_dims)
+        print('Reading spectral data...')
+        spectral_function = read_spectral_function(seedname, nene, nkp, nlayers)
+        plot_spectra(layer_index1, layer_index2, spectral_function, kdists,
+                     energy_array, seedname, fig_dims)
+    if plotmode != 2:
+        print('Reading eigenvalues...')
+        eigenvals = np.loadtxt(seedname+'_eigenval.dat')
+        
 
 
 if __name__ == '__main__':

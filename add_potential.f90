@@ -3,7 +3,7 @@ use file_parsing, only : potential
 use, intrinsic :: iso_fortran_env, only: real64 
 implicit none
     integer, intent(in) :: nlayers, num_bands
-    complex (real64), intent(inout) :: k_ham(nlayers*num_bands,               &
+    complex (real64), intent(inout) :: k_ham(nlayers*num_bands,                &
         nlayers*num_bands)
     integer :: i, j, iblock
     real (real64) :: layer_potential
