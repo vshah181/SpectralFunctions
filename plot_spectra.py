@@ -69,9 +69,9 @@ def read_master_input():
             elif split_line[0] == 'figsize':
                 fig_dimensions = (float(split_line[1]), float(split_line[2]))
             elif split_line[0] == 'bands_plot':
-                band_swtich = int(split_line[1])
+                band_switch = int(split_line[1])
             elif split_line[0] == 'spectra_plot':
-                gf_swtich = int(split_line[1])
+                gf_switch = int(split_line[1])
     if band_switch == 1 and gf_switch == 1:
         plotmode = 3
     elif band_switch == 1 and gf_switch != 1:
@@ -79,8 +79,15 @@ def read_master_input():
     elif band_switch != 1 and gf_switch == 1:
         plotmode = 2
     energy_array = make_energy_array(emin, emax, energy_step, fermi_level)
-    return nlayers, energy_array, seedname, fig_dimensions, plotmode,
-        fermi_level
+    return nlayers, energy_array, seedname, fig_dimensions, plotmode, fermi_level
+
+
+def read_hr(seedname):
+    with open(seedname+'_hr.dat', 'r', encoding='utf-8') as f:
+        f.readline()
+        num_bands = int(f.readline())
+    print(f'There are {num_bands} bands.')
+    return num_bands
 
 
 def read_nnkp(seedname):
@@ -145,6 +152,13 @@ def read_spectral_function(seedname, nene, nkp, nlayers):
     return spectral_function
 
 
+def read_eigenvalues(seedname, nkp):
+    eigenvals_1d = np.loadtxt(seedname+'_eigenval.dat')
+    num_bands = int(len(eigenvals_1d) / nkp)
+    eigenvals = np.reshape(eigenvals_1d, (num_bands, nkp), order='F')
+    return eigenvals
+
+
 def plot_spectra(layer1, layer2, spectral_function, klist, omegas, seedname,
                  fig_dims):
     """
@@ -170,7 +184,7 @@ def plot_spectra(layer1, layer2, spectral_function, klist, omegas, seedname,
     fig = plt.figure(figsize=fig_dims)
     ax = fig.add_subplot(1, 1, 1)
     yy, xx = np.meshgrid(omegas, klist)
-    print('Drawing plot...')
+    print('Drawing spectral plot...')
     ax.pcolormesh(xx, yy, plot_func[:, :].T, shading='gouraud',
                   norm='log', cmap='Purples')
     ax.set_title(fig_title)
@@ -190,21 +204,21 @@ def plot_bands(bandstructure, klist, fig_dims, fermi_level, seedname):
     :param seedname: nane of the system
     :return:
     """
-    fig=plt.figure(figsize=fig_dims)
+    print('Drawing bandstructure plot...')
+    fig = plt.figure(figsize=fig_dims)
     ax = fig.add_subplot(1, 1, 1)
-    num_bands = bandstructure.shape[1]
+    num_bands = bandstructure.shape[0]
     for i in range(num_bands):
-        ax.plot(klist, bandstructure[:, i]-fermi_level, color='tab:blue')
+        ax.plot(klist, bandstructure[i, :]-fermi_level, color='tab:blue')
     ax.set_ylabel(r'$E - E_F$ (eV)')
     ax.set_xlabel(r'$k (\AA^{-1})$')
     plt.tight_layout()
-    plt.savefig(seedname+'_eigenvals.svg')
+    plt.savefig(seedname+'_eigenvals.pdf')
 
 
 def main():
     # Initialise all the variables from the input files
-    nlayers, energy_array, seedname, fig_dims, plotmode, fermi_level 
-        = read_master_input()
+    nlayers, energy_array, seedname, fig_dims, plotmode, fermi_level = read_master_input()
     if plotmode == 0:
         sys.exit('You want to plot neither bands nor spectral function...'
                 'Quitting the programme...')
@@ -223,7 +237,8 @@ def main():
                      energy_array, seedname, fig_dims)
     if plotmode != 2:
         print('Reading eigenvalues...')
-        eigenvals = np.loadtxt(seedname+'_eigenval.dat')
+        eigenvals =  read_eigenvalues(seedname, nkp)
+        plot_bands(eigenvals, kdists, fig_dims, fermi_level, seedname)
         
 
 

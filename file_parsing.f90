@@ -187,15 +187,15 @@ contains
 
     subroutine write_energies(energies, nkp, tot_bands)
         integer, intent(in) :: tot_bands, nkp
-        real (real64), intent(in) :: energies(tot_bands, nkp)
+        real (real64), intent(in) :: energies(tot_bands*nkp)
         integer :: i
         character(len=99) :: ofname
 
         write(ofname, '(2a)') trim(adjustl(seedname)), '_eigenval.dat'
         print*, 'Writing output to: ', trim(adjustl(ofname))
         open(202, file=trim(adjustl(ofname)))
-            do i=1, nkp
-                write(202, *) energies(:, i)
+            do i=1, nkp*tot_bands
+                write(202, *) energies(i)
             end do
         close(202)
     end subroutine write_energies

@@ -5,13 +5,13 @@ use, intrinsic :: iso_fortran_env, only: real64, int32
 implicit none
     real (real64), allocatable :: kp(:,:), kdists(:), hsym_kdists(:)
     integer :: nkp, ik, tot_bands, nene, nf_bands, nkpar, ip, ikpar, ikgfb,    &
-        ikgfe
+        ikgfe, ikeneb, ikenee
     integer :: ibeg, iend, pid, ncpus, ierr, extra  ! for mpi
     integer, allocatable :: sendcounts(:), displs(:)! for mpi
     integer, allocatable :: sendcounts_ene(:), displs_ene(:)! for mpi
     integer (int32):: info, lwork
-    real (real64), allocatable :: rwork(:), energies(:, :), omegas(:),         &
-        energies_glob(:, :)
+    real (real64), allocatable :: rwork(:), energies(:), omegas(:),         &
+        energies_glob(:)
     complex (real64), allocatable :: work(:), kham(:, :), green_func(:),       &
         green_func_glob(:), floquet_ham_list(:, :, :)
 
@@ -55,7 +55,7 @@ implicit none
     call make_ene_window(nene, emin, de, omegas)
 
     if (pid .eq. 0 .and. gfplot) allocate(green_func_glob(nene*nkp*nlayers))
-    if (pid .eq. 0 .and. bandplot) allocate(energies_glob(tot_bands, nkp))
+    if (pid .eq. 0 .and. bandplot) allocate(energies_glob(tot_bands*nkp))
     ! Only the root process needs the recvbuf array
 
     ! Create the arrays required by MPI_GATHERV
@@ -76,7 +76,7 @@ implicit none
         end do
     end if
 
-    allocate(energies(tot_bands, ibeg:iend), kham(tot_bands, tot_bands),       &
+    allocate(energies(tot_bands*nkpar), kham(tot_bands, tot_bands),            &
         green_func(nene*nkpar*nlayers), floquet_ham_list(num_r_pts, tot_bands, &
         tot_bands))
     call floquet_expansion(max_order, num_bands, num_r_pts, r_ham_list,        &
@@ -89,16 +89,18 @@ implicit none
     do ik=ibeg, iend
         if(pid .eq. 0) print*, 'Calculating k-point', ik, 'of', nkpar, '...' 
         ikpar=ik-(ibeg-1)
+        ikeneb=((ikpar-1)*tot_bands)+1
+        ikenee=ikpar*tot_bands
         ikgfb=((ikpar-1)*nlayers*nene)+1
         ikgfe=ikpar*nene*nlayers
         ! ikpar always starts at 1
         call ft_ham_r(nf_bands, kp(ik, :), kham, r_list, weights,              &
             floquet_ham_list, num_r_pts, nlayers)
         ! call add_potential(kham, nlayers, num_bands)
-        call zheev('V', 'L', tot_bands, kham, tot_bands, energies(:, ik),      &
-            work, lwork, rwork, info)
+        call zheev('V', 'L', tot_bands, kham, tot_bands,                       &
+            energies(ikeneb:ikenee), work, lwork, rwork, info)
         if(gfplot) call greens_function(nene, nlayers, nf_bands, omegas, kham, &
-            energies(ik, :), eta, green_func(ikgfb:ikgfe), num_bands)
+            energies(ikeneb:ikenee), eta, green_func(ikgfb:ikgfe), num_bands)
         if(pid .eq. 0) print*, 'done'
     end do
 
