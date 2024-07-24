@@ -22,7 +22,7 @@ implicit none
                 denominator=eigval-omegas(ien)-cmplx(0d0, eta, kind=real64)
                 green_func(ig)=green_func(ig)+(numerator/denominator)
                 layer_num=layer_num+1
-            end do
-        end do
-    end do
+            enddo
+        enddo
+    enddo
 end subroutine greens_function

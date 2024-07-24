@@ -9,6 +9,6 @@ implicit none
     omegas(1) = emin
     do i=2, nene
         omegas(i)=omegas(i-1)+de
-    end do
+    enddo
 end subroutine make_ene_window
 

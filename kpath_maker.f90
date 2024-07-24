@@ -11,12 +11,12 @@ implicit none
     real (real64) :: kpath(3), dk(3), abs_dk(3), abs_kpath(3)
 
     do i=1, 3
-    end do
+    enddo
     do i=1, nkpath+1
         abs_hsym_pts(i, :) = high_sym_pts(i, 1) * bvec(1, :)                   &
                            + high_sym_pts(i, 2) * bvec(2, :)                   &
                            + high_sym_pts(i, 3) * bvec(3, :)
-    end do
+    enddo
     ik=1
     kdists(1) = 0d0
     do i=1, nkpath
@@ -28,12 +28,12 @@ implicit none
             kp(ik, :)=high_sym_pts(i, :)+(j-1)*dk
             kdists(ik+1)=norm2(abs_dk)+kdists(ik)
             ik=ik+1
-        end do
-    end do
+        enddo
+    enddo
     kp(nkp, :)=high_sym_pts(nkpath+1, :)
 
     do i=1, nkpath+1
         hsym_kdists(i)=kdists((nkpt_per_path*(i-1))+1)
-    end do
+    enddo
 
 end subroutine make_kpath

@@ -28,13 +28,13 @@ implicit none
                 sin(phase), kind=real64))/weights(ir)
                 irow=irow+num_bands
                 icol=icol+num_bands
-            end do
-        end do
+            enddo
+        enddo
     else
         do ir=1, num_r_pts
             phase=dot_product(k*tau, r_list(ir, :))
             k_ham = k_ham + (r_ham_list(ir, :, :) * cmplx(dcos(phase),         &
                 sin(phase), kind=real64) / weights(ir))
-        end do
-    end if
+        enddo
+    endif
 end subroutine ft_ham_r

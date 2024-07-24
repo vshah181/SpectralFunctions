@@ -22,7 +22,7 @@ implicit none
             frequency_matrix(i:i+(nbands-1), i:i+(nbands-1))=cmplx(im*hw, 0d0, &
                 kind=real64)
             im=im-1
-        end do
+        enddo
 
         do ir=1, n_r_pts
             do m=-max_order, max_order
@@ -34,13 +34,13 @@ implicit none
                     new_r_ham(irow:irow+nbands-1, icol:icol+nbands-1)=ham_m
                     icol=icol+nbands
                     irow=irow+nbands
-                end do
-            end do
+                enddo
+            enddo
             new_r_ham=new_r_ham+frequency_matrix
             new_r_ham_list(ir, :, :)=new_r_ham
-        end do
+        enddo
     else
         print*, 'Hello!'
         new_r_ham_list=r_ham_list
-    end if
+    endif
 end subroutine floquet_expansion

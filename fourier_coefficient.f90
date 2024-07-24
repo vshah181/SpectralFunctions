@@ -20,7 +20,7 @@ implicit none
     do i=1, n-1
         ham_m=ham_m+(exp(cmplx(0, -m*omega*(t0+i*(period/n)), kind=real64))    &
         *t_ham(nbands, r, (t0+i*(period/n)), r_ham))
-    end do
+    enddo
     ham_m=ham_m/n
 end subroutine fourier_coefficient
 

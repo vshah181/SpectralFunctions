@@ -5,7 +5,7 @@ use, intrinsic :: iso_fortran_env, only: real64, int32
 implicit none
     real (real64), allocatable :: kp(:,:), kdists(:), hsym_kdists(:)
     integer :: nkp, ik, tot_bands, nene, nf_bands, nkpar, ip, ikpar, ikgfb,    &
-        ikgfe, ikeneb, ikenee
+        ikgfe, ikeneb, ikenee, j
     integer :: ibeg, iend, pid, ncpus, ierr, extra  ! for mpi
     integer, allocatable :: sendcounts(:), displs(:)! for mpi
     integer, allocatable :: sendcounts_ene(:), displs_ene(:)! for mpi
@@ -44,7 +44,7 @@ implicit none
     else
         ibeg=extra+ibeg
         iend=ibeg+(nkp/ncpus)-1
-    end if
+    endif
     nkpar=(iend-(ibeg-1))
     if(pid .eq. 0) write(*, '(i6,x,a)') nkpar,                                 &
         'kpoints to be calculated on node 0'
@@ -69,13 +69,13 @@ implicit none
             else
                 if(gfplot) sendcounts(ip)=(1+(nkp/ncpus))*nene*nlayers
                 if(bandplot) sendcounts_ene(ip)=(1+(nkp/ncpus))*tot_bands
-            end if
+            endif
             if(ip .lt. ncpus) then
                 displs(1+ip)=displs(ip)+sendcounts(ip)
                 displs_ene(1+ip)=displs_ene(ip)+sendcounts_ene(ip)
-            end if
-        end do
-    end if
+            endif
+        enddo
+    endif
 
     allocate(energies(tot_bands*nkpar), kham(tot_bands, tot_bands),            &
         green_func(nene*nkpar*nlayers), floquet_ham_list(num_r_pts, tot_bands, &
@@ -97,13 +97,16 @@ implicit none
         ! ikpar always starts at 1
         call ft_ham_r(nf_bands, kp(ik, :), kham, r_list, weights,              &
             floquet_ham_list, num_r_pts, nlayers)
+        do j=1, nf_bands*nlayers
+            
+        enddo
         ! call add_potential(kham, nlayers, num_bands)
         call zheev('V', 'L', tot_bands, kham, tot_bands,                       &
             energies(ikeneb:ikenee), work, lwork, rwork, info)
         if(gfplot) call greens_function(nene, nlayers, nf_bands, omegas, kham, &
             energies(ikeneb:ikenee), eta, green_func(ikgfb:ikgfe), num_bands)
         if(pid .eq. 0) print*, 'done'
-    end do
+    enddo
 
     call MPI_BARRIER(MPI_COMM_WORLD, ierr)
     if(pid .eq. 0) print*, 'Gathering data...'

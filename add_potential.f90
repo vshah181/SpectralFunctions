@@ -13,6 +13,6 @@ implicit none
         iblock=1+(i-1)*num_bands
         do j=iblock, iblock+(num_bands-1)
             k_ham(j, j)=k_ham(j, j)+layer_potential
-        end do
-    end do
+        enddo
+    enddo
 end subroutine add_potential

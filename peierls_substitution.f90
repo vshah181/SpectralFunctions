@@ -22,8 +22,8 @@ contains
                 element = r_ham(ib, jb)
                 element = element*cmplx(cos(phase), sin(phase), kind=real64)
                 ham_t(ib, jb) = element
-            end do
-        end do
+            enddo
+        enddo
     end function t_ham
 end module peierls_substitution
 

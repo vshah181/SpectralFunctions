@@ -66,13 +66,13 @@ contains
             else if(trim(adjustl(label)) .eq. 'spectra_plot') then
                 read(ival, *) gf_switch
                 if(gf_switch .eq. 1) gfplot=.true.
-            end if
-        end do
+            endif
+        enddo
         close(110)
         if(.not.(gfplot .or. bandplot)) then
             print*, "You want neither eigenvalues nor spectra? Doing nothing..."
             stop
-        end if
+        endif
         if(bulk) nlayers=1
         allocate(potential(nlayers))
     end subroutine read_input
@@ -96,9 +96,9 @@ contains
                     read(111, *)r_list(ir, 1), r_list(ir, 2), r_list(ir, 3),   &
                               hi_row, hi_col, rp, ip
                     r_ham_list(ir, hi_row, hi_col)=cmplx(rp, ip, kind=real64)  
-                end do
-            end do
-        end do
+                enddo
+            enddo
+        enddo
         close(111)
     end subroutine read_hr
 
@@ -110,7 +110,7 @@ contains
         allocate(high_sym_pts(nkpath, 3), high_sym_pt_symbols(nkpath))
         do i=1, nkpath
             read(112, *) high_sym_pts(i, :), high_sym_pt_symbols(i)
-        end do
+        enddo
         close(112)
         nkpath=nkpath-1
     end subroutine read_kpoints
@@ -126,9 +126,9 @@ contains
             if (trim(adjustl(line)) .eq. 'begin recip_lattice') then
                 do i=1, 3
                     read(113, *, iostat=eof) bvec(i, :)
-                end do
-            end if
-        end do
+                enddo
+            endif
+        enddo
         close(113)
     end subroutine read_nnkp
 
@@ -137,7 +137,7 @@ contains
         open (114, file='potential.dat')
         do i=1, nlayers
             read(114, *) potential(i)
-        end do
+        enddo
         close(114)
     end subroutine read_potential
 
@@ -162,8 +162,8 @@ contains
                 read(ival, *) omega
             else if(trim(adjustl(label)) .eq. 'max_order') then
                 read(ival, *) max_order
-            end if
-        end do
+            endif
+        enddo
         close(115)
         omega = omega / reduced_planck_constant_ev ! to get it in hertz
         phase_shift = phase_shift * pi ! to get it in radians
@@ -183,7 +183,7 @@ contains
         open (201, file=trim(adjustl(ofname)))
         do i=1, nene*nlayers*nkp
             write(201, *) spec_func(i)
-        end do
+        enddo
         close(201)
     end subroutine write_spec_func
 
@@ -198,7 +198,7 @@ contains
         open(202, file=trim(adjustl(ofname)))
             do i=1, nkp*tot_bands
                 write(202, *) energies(i)
-            end do
+            enddo
         close(202)
     end subroutine write_energies
 
