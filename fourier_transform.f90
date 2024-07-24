@@ -25,7 +25,7 @@ implicit none
                 k_ham(irow:irow+num_bands-1, icol:icol+num_bands-1)=           &
                 k_ham(irow:irow+num_bands-1, icol:icol+num_bands-1)+           &
                 (r_ham_list(ir, :, :)*cmplx(cos(phase),                        &
-                sin(phase), kind=real64))/weights(ir)
+                -sin(phase), kind=real64))/weights(ir)
                 irow=irow+num_bands
                 icol=icol+num_bands
             enddo
@@ -33,8 +33,8 @@ implicit none
     else
         do ir=1, num_r_pts
             phase=dot_product(k*tau, r_list(ir, :))
-            k_ham = k_ham + (r_ham_list(ir, :, :) * cmplx(dcos(phase),         &
-                sin(phase), kind=real64) / weights(ir))
+            k_ham = k_ham + (r_ham_list(ir, :, :) * cmplx(cos(phase),          &
+                -sin(phase), kind=real64) / weights(ir))
         enddo
     endif
 end subroutine ft_ham_r
