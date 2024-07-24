@@ -227,6 +227,7 @@ def plot_bands(bandstructure, klist, fig_dims, fermi_level, seedname):
     ax.set_xlabel(r'$k (\AA^{-1})$')
     plt.tight_layout()
     plt.savefig(seedname+'_eigenval.pdf')
+    plt.show()
 
 
 def main():

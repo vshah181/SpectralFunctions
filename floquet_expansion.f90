@@ -23,10 +23,11 @@ implicit none
                 kind=real64)
             im=im-1
         end do
+
         do ir=1, n_r_pts
             do m=-max_order, max_order
-                irow=(nbands*(abs(m)-m)/2)+1 !1 if +ve m, else (|m|*nbands)+1
-                icol=(nbands*(abs(m)+m)/2)+1 !1 if -ve m, else (|m|*nbands)+1
+                irow=(nbands*(abs(m)-m)/2)+1  ! 1 if +ve m, else (|m|*nbands)+1
+                icol=(nbands*(abs(m)+m)/2)+1  ! 1 if -ve m, else (|m|*nbands)+1
                 call fourier_coefficient(nbands, r_ham_list(ir, :, :), m, 0d0, &
                     r_list(ir, :), ham_m)
                 do i=1, (max_order-abs(m))+1
@@ -38,10 +39,8 @@ implicit none
             new_r_ham=new_r_ham+frequency_matrix
             new_r_ham_list(ir, :, :)=new_r_ham
         end do
-        do im=1, nbands*(max_order+1)
-            write(400, fmt='(18f7.3)') real(frequency_matrix(im, :))
-        end do
     else
+        print*, 'Hello!'
         new_r_ham_list=r_ham_list
     end if
 end subroutine floquet_expansion
