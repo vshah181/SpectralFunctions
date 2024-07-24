@@ -142,7 +142,8 @@ contains
     end subroutine read_potential
 
     subroutine read_vector_potential
-        use constants, only : pi, reduced_planck_constant_ev, tau
+        use constants, only : pi, reduced_planck_constant_ev, tau,             &
+            speed_of_light
         integer :: eof, i
         real (real64) :: s
         character(len=99) :: label, ival, line, temp_line
@@ -166,7 +167,8 @@ contains
         close(115)
         omega = omega / reduced_planck_constant_ev ! to get it in hertz
         phase_shift = phase_shift * pi ! to get it in radians
-        a_0 = (2*reduced_planck_constant_ev*s)/(tau/norm2(bvec(1, :)))
+        a_0 = (s*2*reduced_planck_constant_ev*speed_of_light*1d10)             &
+            /(tau/norm2(bvec(1, :)))
     end subroutine read_vector_potential
 
 
