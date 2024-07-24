@@ -9,5 +9,6 @@ implicit none
     real (real64), parameter :: planck_constant_ev = planck_constant/elementary_charge
     real (real64), parameter :: reduced_planck_constant_ev = reduced_planck_constant  &
         /elementary_charge
+    real (real64), parameter :: speed_of_light = 299792458d0
 end module constants
 
