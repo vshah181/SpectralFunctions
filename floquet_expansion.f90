@@ -40,7 +40,12 @@ implicit none
             new_r_ham_list(ir, :, :)=new_r_ham
         enddo
     else
-        print*, 'Hello!'
         new_r_ham_list=r_ham_list
     endif
+    do i=1, (1+max_order)*nbands
+        write(501, *) real(new_r_ham_list(n_r_pts, i, :))
+        write(502, *) real(new_r_ham_list(1, i, :))
+        write(511, *) aimag(new_r_ham_list(n_r_pts, i, :))
+        write(512, *) aimag(new_r_ham_list(1, i, :))
+    end do
 end subroutine floquet_expansion

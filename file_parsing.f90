@@ -6,7 +6,7 @@ private
     character(len=22), parameter :: kpt_file="kpoints", input_file='INPUT'
     complex (real64), allocatable :: r_ham_list(:, :, :)
     real (real64), allocatable :: high_sym_pts(:, :), potential(:)
-    real (real64) :: bvec(3, 3)
+    real (real64) :: bvec(3, 3), avec(3, 3)
     real (real64) :: e_fermi, emin, emax, de, eta, phase_shift, omega, a_0
     integer, allocatable :: r_list(:, :), weights(:)
     character, allocatable :: high_sym_pt_symbols(:)
@@ -15,8 +15,8 @@ private
     logical :: e_fermi_present, do_floquet, bulk, bandplot, gfplot
     public num_bands, num_r_pts, weights, r_list, r_ham_list, read_hr, eta, de,&
            write_spec_func, high_sym_pts, nkpath, nkpt_per_path, read_kpoints, &
-           read_potential, nlayers, basis, bvec, emin, emax, do_floquet, a_0,  &
-           potential, direction, read_vector_potential, omega, max_order,      &
+           read_potential, nlayers, basis, bvec, avec, emin, emax, do_floquet, &
+           a_0, potential, direction, read_vector_potential, omega, max_order, &
            phase_shift, bulk, gfplot, bandplot, write_energies
 contains
     subroutine read_input
@@ -123,7 +123,11 @@ contains
 
         do while(eof .ne. iostat_end)
             read(113, '(a)', iostat=eof) line
-            if (trim(adjustl(line)) .eq. 'begin recip_lattice') then
+            if (trim(adjustl(line)) .eq. 'begin real_lattice') then
+                do i=1, 3
+                    read(113, *, iostat=eof) avec(i, :)
+                enddo
+            else if (trim(adjustl(line)) .eq. 'begin recip_lattice') then
                 do i=1, 3
                     read(113, *, iostat=eof) bvec(i, :)
                 enddo
@@ -142,8 +146,7 @@ contains
     end subroutine read_potential
 
     subroutine read_vector_potential
-        use constants, only : pi, reduced_planck_constant_ev, tau,             &
-            speed_of_light
+        use constants, only : pi, reduced_planck_constant_ev, tau
         integer :: eof, i
         real (real64) :: s
         character(len=99) :: label, ival, line, temp_line
@@ -167,8 +170,8 @@ contains
         close(115)
         omega = omega / reduced_planck_constant_ev ! to get it in hertz
         phase_shift = phase_shift * pi ! to get it in radians
-        a_0 = (s*2*reduced_planck_constant_ev*speed_of_light*1d10)             &
-            /(tau/norm2(bvec(1, :)))
+        a_0 = (s+s)/norm2(avec(1, :))
+        ! Ignore hbar*c
     end subroutine read_vector_potential
 
 

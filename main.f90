@@ -98,12 +98,12 @@ implicit none
         call ft_ham_r(nf_bands, kp(ik, :), kham, r_list, weights,              &
             floquet_ham_list, num_r_pts, nlayers)
         do j=1, nf_bands*nlayers
-            write(400+ik, *) kham(j, :)
+            write(400+ik, *) real(kham(j, :))
+            write(410+ik, *) aimag(kham(j, :))
         enddo
         ! call add_potential(kham, nlayers, num_bands)
         call zheev('V', 'L', tot_bands, kham, tot_bands,                       &
             energies(ikeneb:ikenee), work, lwork, rwork, info)
-        write(400+10*ik, *) energies(ikeneb:ikenee)
         if(gfplot) call greens_function(nene, nlayers, nf_bands, omegas, kham, &
             energies(ikeneb:ikenee), eta, green_func(ikgfb:ikgfe), num_bands)
         if(pid .eq. 0) print*, 'done'
