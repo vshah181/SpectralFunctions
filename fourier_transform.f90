@@ -34,7 +34,7 @@ implicit none
         do ir=1, num_r_pts
             phase=dot_product(k*tau, r_list(ir, :))
             k_ham = k_ham + (r_ham_list(ir, :, :) * cmplx(cos(phase),          &
-                 -sin(phase), kind=real64) / weights(ir))
+                 sin(phase), kind=real64) / weights(ir))
         enddo
     endif
 end subroutine ft_ham_r

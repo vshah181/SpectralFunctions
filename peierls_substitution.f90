@@ -19,15 +19,9 @@ contains
         do i=1, 3
             r_real=r_real+(r(i)*avec(i, :))
         enddo
-        phase = dot_product(vector_potential, r_real)
+        phase=dot_product(vector_potential, r_real)
         ! Igore hbar*c
-        do ib=1, nbands
-            do jb=1, nbands
-                element = r_ham(ib, jb)
-                element = element*cmplx(cos(phase), sin(phase), kind=real64)
-                ham_t(ib, jb) = element
-            enddo
-        enddo
+        ham_t=r_ham*cmplx(cos(phase), sin(phase), kind=real64)
     end function t_ham
 end module peierls_substitution
 

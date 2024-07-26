@@ -9,18 +9,16 @@ implicit none
     complex (real64), intent(out) :: new_r_ham_list(n_r_pts,                   &
         (1+max_order)*nbands, (1+max_order)*nbands)
     complex (real64) :: new_r_ham((1+max_order)*nbands, (1+max_order)*nbands), &
-        ham_m(nbands, nbands), frequency_matrix((1+max_order)*nbands,          &
-            (1+max_order)*nbands)
+        ham_m(nbands, nbands), frequency_array((1+max_order)*nbands)
     real (real64) :: hw
     integer :: m, irow, icol, i, ir, im
 
     hw=omega*reduced_planck_constant_ev
     if(do_floquet) then
-        frequency_matrix= cmplx(0d0, 0d0, kind=real64)
+        frequency_array=cmplx(0d0, 0d0, kind=real64)
         im=max_order-1
         do i=1, nbands*(1+max_order), nbands
-            frequency_matrix(i:i+(nbands-1), i:i+(nbands-1))=cmplx(im*hw, 0d0, &
-                kind=real64)
+            frequency_array(i:i+nbands-1)=cmplx(im*hw, 0d0, kind=real64)
             im=im-1
         enddo
 
@@ -36,16 +34,13 @@ implicit none
                     irow=irow+nbands
                 enddo
             enddo
-            new_r_ham=new_r_ham+frequency_matrix
+            !new_r_ham=new_r_ham+frequency_matrix
+            do i=1, nbands*(1+max_order)
+                new_r_ham(i, i)=new_r_ham(i, i)+frequency_array(i)
+            enddo
             new_r_ham_list(ir, :, :)=new_r_ham
         enddo
     else
         new_r_ham_list=r_ham_list
     endif
-    do i=1, (1+max_order)*nbands
-        write(501, *) real(new_r_ham_list(n_r_pts, i, :))
-        write(502, *) real(new_r_ham_list(1, i, :))
-        write(511, *) aimag(new_r_ham_list(n_r_pts, i, :))
-        write(512, *) aimag(new_r_ham_list(1, i, :))
-    end do
 end subroutine floquet_expansion

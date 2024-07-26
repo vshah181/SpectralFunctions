@@ -171,6 +171,7 @@ contains
         omega = omega / reduced_planck_constant_ev ! to get it in hertz
         phase_shift = phase_shift * pi ! to get it in radians
         a_0 = (s+s)/norm2(avec(1, :))
+        write(*, fmt='(f9.5)') a_0
         ! Ignore hbar*c
     end subroutine read_vector_potential
 
