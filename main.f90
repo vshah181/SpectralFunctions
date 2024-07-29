@@ -97,10 +97,6 @@ implicit none
         ! ikpar always starts at 1
         call ft_ham_r(nf_bands, kp(ik, :), kham, r_list, weights,              &
             floquet_ham_list, num_r_pts, nlayers)
-        do j=1, nf_bands*nlayers
-            write(400+ik, *) real(kham(j, :))
-            write(410+ik, *) aimag(kham(j, :))
-        enddo
         ! call add_potential(kham, nlayers, num_bands)
         call zheev('V', 'L', tot_bands, kham, tot_bands,                       &
             energies(ikeneb:ikenee), work, lwork, rwork, info)
