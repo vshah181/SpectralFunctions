@@ -168,7 +168,6 @@ def read_eigenvalues(seedname, nkp):
     eigenvals_1d = np.loadtxt(seedname+'_eigenval.dat')
     num_bands = int(len(eigenvals_1d) / nkp)
     eigenvals = np.reshape(eigenvals_1d, (num_bands, nkp), order='F')
-    np.savetxt('WS2_eigenval_test', eigenvals)
     return eigenvals
 
 
