@@ -228,7 +228,6 @@ def plot_bands(bandstructure, klist, fig_dims, fermi_level, seedname):
     ax.set_ylim(1.4, 2.5)
     plt.tight_layout()
     plt.savefig(seedname+'_eigenval.pdf')
-    plt.show()
 
 
 def main():
