@@ -1,6 +1,7 @@
 import sys
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.colors import LogNorm
 
 #TODO This whole script would be better if I made it object-oriented 
 plt.rcParams["font.family"] = "Arial"
@@ -197,8 +198,8 @@ def plot_spectra(layer1, layer2, spectral_function, klist, omegas, seedname,
     ax = fig.add_subplot(1, 1, 1)
     yy, xx = np.meshgrid(omegas, klist)
     print('Drawing spectral plot...')
-    ax.pcolormesh(xx, yy, plot_func[:, :].T, shading='gouraud',
-                  norm='log', cmap='Purples')
+    ax.pcolormesh(xx, yy, plot_func[:, :].T, shading='gouraud', cmap='Purples',
+                  norm=LogNorm(vmin=plot_func.min(), vmax=plot_func.max()))
     ax.set_title(fig_title)
     ax.set_ylabel(r'$E - E_F$ (eV)')
     ax.set_xlabel(r'$k (\AA^{-1})$')
