@@ -225,7 +225,7 @@ def plot_bands(bandstructure, klist, fig_dims, fermi_level, seedname):
         ax.plot(klist, bandstructure[i, :]-fermi_level, color='tab:blue')
     ax.set_ylabel(r'$E - E_F$ (eV)')
     ax.set_xlabel(r'$k (\AA^{-1})$')
-    ax.set_ylim(1.4, 2.5)
+    # ax.set_ylim(-1, 1)
     plt.tight_layout()
     plt.savefig(seedname+'_eigenval.pdf')
 
