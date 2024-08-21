@@ -123,16 +123,23 @@ def read_kpoints(seedname):
     kpt_per_path = int(f.readline())
     n_hsym_pts = int(f.readline())
     hsym_pts = np.empty([n_hsym_pts, 3])
+    hsym_chars = []
+    locs = []
     abs_hsym_pts = np.empty([n_hsym_pts, 3])
     kdists = np.zeros([1 + (kpt_per_path * (n_hsym_pts - 1))])
     for i in range(n_hsym_pts):
-        hsym_pts[i, :] = f.readline().split()[0:3]
+        line = f.readline().split()
+        hsym_pts[i, :] = line[0:3]
+        try:
+            hsym_chars.append(line[3].upper())
+        except IndexError:
+            pass
     f.close()
     for i in range(n_hsym_pts):
         abs_hsym_pts[i, :] = hsym_pts[i, 0] * bvec[0, :] \
                              + hsym_pts[i, 1] * bvec[1, :] \
                              + hsym_pts[i, 2] * bvec[2, :]
-    jk=0
+    jk = 0
     for i in range(n_hsym_pts - 1):
         abs_kpath = abs_hsym_pts[i + 1, :] - abs_hsym_pts[i, :]
         abs_dk = abs_kpath / kpt_per_path
@@ -140,7 +147,10 @@ def read_kpoints(seedname):
             kdists[jk + 1] = np.linalg.norm(abs_dk) + kdists[jk]
             jk += 1
     kdists -= kdists[kpt_per_path]
-    return kdists
+    if len(hsym_chars) == len(hsym_pts):
+        for i in range(n_hsym_pts):
+            locs.append(kdists[i * kpt_per_path])
+    return kdists, locs, hsym_chars
 
 
 def read_spectral_function(seedname, nene, nkp, nlayers):
@@ -173,7 +183,7 @@ def read_eigenvalues(seedname, nkp):
 
 
 def plot_spectra(layer1, layer2, spectral_function, klist, omegas, seedname,
-                 fig_dims):
+                 fig_dims, locs, labels):
     """
     Draw the graph and save as raster image.
     :param layer1: First unit cell
@@ -207,7 +217,8 @@ def plot_spectra(layer1, layer2, spectral_function, klist, omegas, seedname,
     plt.savefig(filename, dpi=350)
 
 
-def plot_bands(bandstructure, klist, fig_dims, fermi_level, seedname):
+def plot_bands(bandstructure, klist, fig_dims, fermi_level, seedname, locs,
+               labels):
     """
     Plot the band structure
     :param bandstructure: 2d array. Bands are the rows.
@@ -225,7 +236,10 @@ def plot_bands(bandstructure, klist, fig_dims, fermi_level, seedname):
         ax.plot(klist, bandstructure[i, :]-fermi_level, color='tab:blue')
     ax.set_ylabel(r'$E - E_F$ (eV)')
     ax.set_xlabel(r'$k (\AA^{-1})$')
+    if len(locs) > 0:
+        ax.set_xticks(locs, labels)
     # ax.set_ylim(-1, 1)
+    ax.set_xlim(np.min(klist), np.max(klist))
     plt.tight_layout()
     plt.savefig(seedname+'_eigenval.pdf')
 
@@ -236,7 +250,7 @@ def main():
     if plotmode == 0:
         sys.exit('You want to plot neither bands nor spectral function...'
                 'Quitting the programme...')
-    kdists = read_kpoints(seedname)
+    kdists, locs, labels = read_kpoints(seedname)
     nkp = len(kdists)
     nene = len(energy_array)
 
@@ -248,11 +262,12 @@ def main():
         print('Reading spectral data...')
         spectral_function = read_spectral_function(seedname, nene, nkp, nlayers)
         plot_spectra(layer_index1, layer_index2, spectral_function, kdists,
-                     energy_array, seedname, fig_dims)
+                     energy_array, seedname, fig_dims, locs, labels)
     if plotmode != 2:
         print('Reading eigenvalues...')
-        eigenvals =  read_eigenvalues(seedname, nkp)
-        plot_bands(eigenvals, kdists, fig_dims, fermi_level, seedname)
+        eigenvals = read_eigenvalues(seedname, nkp)
+        plot_bands(eigenvals, kdists, fig_dims, fermi_level, seedname, locs,
+                   labels)
         
 
 
