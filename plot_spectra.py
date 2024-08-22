@@ -218,7 +218,7 @@ def plot_spectra(layer1, layer2, spectral_function, klist, omegas, seedname,
                   norm=LogNorm(vmin=plot_func.min(), vmax=plot_func.max()))
     ax.set_title(fig_title)
     ax.set_ylabel(r'$E - E_F$ (eV)')
-    ax.set_xlabel(r'$k (\AA^{-1})$')
+    ax.set_xlabel(r'$k\ (\mathrm{\AA}^{-1}$)')
     plt.tight_layout()
     plt.savefig(filename, dpi=350)
 
@@ -239,15 +239,18 @@ def plot_bands(bandstructure, klist, fig_dims, fermi_level, seedname, locs,
     ax = fig.add_subplot(1, 1, 1)
     num_bands = bandstructure.shape[0]
     for i in range(num_bands):
-        ax.plot(klist, bandstructure[i, :] - fermi_level, color='tab:blue')
-    ax.set_ylabel(r'$E - E_F$ (eV)')
+        ax.plot(klist, bandstructure[i, :], color='tab:blue')
+    ax.set_ylabel(r'$E$ (eV)')
     ax.set_xlabel(r'$k\ (\mathrm{\AA}^{-1}$)')
     if len(locs) > 0:
         ax.set_xticks(locs, labels)
         ax.set_xlabel('')
         ax.vlines(locs, ymin=np.min(bandstructure), ymax=np.max(bandstructure),
                   color='black', linewidth=1.0)
+    ax.hlines(fermi_level, xmin=np.min(klist), xmax=np.max(klist),
+              color='black', linewidth=1.0, linestyle='dotted')
     ax.set_xlim(np.min(klist), np.max(klist))
+    ax.set_ylim(np.min(bandstructure), np.max(bandstructure))
     plt.tight_layout()
     plt.savefig(seedname + '_eigenval.pdf')
 
