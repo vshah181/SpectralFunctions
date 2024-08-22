@@ -238,19 +238,20 @@ def plot_bands(bandstructure, klist, fig_dims, fermi_level, seedname, locs,
     fig = plt.figure(figsize=fig_dims)
     ax = fig.add_subplot(1, 1, 1)
     num_bands = bandstructure.shape[0]
+    to_plot = bandstructure - fermi_level
     for i in range(num_bands):
-        ax.plot(klist, bandstructure[i, :], color='tab:blue')
-    ax.set_ylabel(r'$E$ (eV)')
+        ax.plot(klist, to_plot[i, :], color='tab:blue')
+    ax.set_ylabel(r'$E - E_F$ (eV)')
     ax.set_xlabel(r'$k\ (\mathrm{\AA}^{-1}$)')
     if len(locs) > 0:
         ax.set_xticks(locs, labels)
         ax.set_xlabel('')
-        ax.vlines(locs, ymin=np.min(bandstructure), ymax=np.max(bandstructure),
+        ax.vlines(locs, ymin=np.min(to_plot), ymax=np.max(to_plot),
                   color='black', linewidth=1.0)
-    ax.hlines(fermi_level, xmin=np.min(klist), xmax=np.max(klist),
-              color='black', linewidth=1.0, linestyle='dotted')
+    ax.hlines(0.0, xmin=np.min(klist), xmax=np.max(klist), color='black',
+              linewidth=1.0, linestyle='dotted')
     ax.set_xlim(np.min(klist), np.max(klist))
-    ax.set_ylim(np.min(bandstructure), np.max(bandstructure))
+    ax.set_ylim(np.min(to_plot), np.max(to_plot))
     plt.tight_layout()
     plt.savefig(seedname + '_eigenval.pdf')
 
