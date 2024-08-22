@@ -3,13 +3,15 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.colors import LogNorm
 
-#TODO This whole script would be better if I made it object-oriented 
+# TODO This whole script would be better if I made it object-oriented
 plt.rcParams["font.family"] = "Arial"
 plt.rcParams["mathtext.fontset"] = "custom"
 plt.rcParams["mathtext.rm"] = "Arial"
 plt.rcParams["mathtext.it"] = "Arial:italic"
 plt.rcParams["mathtext.bf"] = "Arial:bold"
 plt.rcParams['svg.fonttype'] = 'none'
+
+
 def read_layer_index(nlayers, min_layers):
     """
     Read the required layers from the user input.
@@ -22,7 +24,7 @@ def read_layer_index(nlayers, min_layers):
         layer_index = int(user_input)
         if layer_index > nlayers or layer_index < min_layers:
             sys.exit('FATAL ERROR: Input is out of range. Must be greater '
-                     f'than {min_layers-1} and less than {nlayers+1}.')
+                     f'than {min_layers - 1} and less than {nlayers + 1}.')
     except ValueError:
         sys.exit('FATAL ERROR: Input is not a number.')
     return layer_index
@@ -40,7 +42,7 @@ def make_energy_array(emin, emax, de, efermi):
     nene = int((emax - emin) / de)
     energy_window = np.empty(nene)
     for i in range(nene):
-        energy_window[i] = (emin - efermi) + (i*de)
+        energy_window[i] = (emin - efermi) + (i * de)
     return energy_window
 
 
@@ -89,7 +91,7 @@ def read_master_input():
 
 
 def read_hr(seedname):
-    with open(seedname+'_hr.dat', 'r', encoding='utf-8') as f:
+    with open(seedname + '_hr.dat', 'r', encoding='utf-8') as f:
         f.readline()
         num_bands = int(f.readline())
     print(f'There are {num_bands} bands.')
@@ -150,6 +152,10 @@ def read_kpoints(seedname):
     if len(hsym_chars) == len(hsym_pts):
         for i in range(n_hsym_pts):
             locs.append(kdists[i * kpt_per_path])
+            if hsym_chars[i] == 'GAMMA':
+                hsym_chars[i] = chr(915)  # Greek letter capital gamma
+            elif hsym_chars[i] == 'SIGMA':
+                hsym_chars[i] = chr(931)
     return kdists, locs, hsym_chars
 
 
@@ -176,7 +182,7 @@ def read_eigenvalues(seedname, nkp):
     :param nkp: number of k points - x axis
     :return: eigenvals: (ndarray(dtype=float))
     """
-    eigenvals_1d = np.loadtxt(seedname+'_eigenval.dat')
+    eigenvals_1d = np.loadtxt(seedname + '_eigenval.dat')
     num_bands = int(len(eigenvals_1d) / nkp)
     eigenvals = np.reshape(eigenvals_1d, (num_bands, nkp), order='F')
     return eigenvals
@@ -198,7 +204,7 @@ def plot_spectra(layer1, layer2, spectral_function, klist, omegas, seedname,
     if layer1 != layer2:
         fig_title = f'Layer = {layer1}-{layer2}'
         filename = f'{seedname}_layer_{layer1}-{layer2}.png'
-        plot_func = np.sum(spectral_function[layer1-1:layer2, :, :], axis=0)
+        plot_func = np.sum(spectral_function[layer1 - 1:layer2, :, :], axis=0)
     else:
         layer = layer2
         fig_title = f'Layer = {layer}'
@@ -233,15 +239,17 @@ def plot_bands(bandstructure, klist, fig_dims, fermi_level, seedname, locs,
     ax = fig.add_subplot(1, 1, 1)
     num_bands = bandstructure.shape[0]
     for i in range(num_bands):
-        ax.plot(klist, bandstructure[i, :]-fermi_level, color='tab:blue')
+        ax.plot(klist, bandstructure[i, :] - fermi_level, color='tab:blue')
     ax.set_ylabel(r'$E - E_F$ (eV)')
-    ax.set_xlabel(r'$k (\AA^{-1})$')
+    ax.set_xlabel(r'$k\ (\mathrm{\AA}^{-1}$)')
     if len(locs) > 0:
         ax.set_xticks(locs, labels)
-    # ax.set_ylim(-1, 1)
+        ax.set_xlabel('')
+        ax.vlines(locs, ymin=np.min(bandstructure), ymax=np.max(bandstructure),
+                  color='black', linewidth=1.0)
     ax.set_xlim(np.min(klist), np.max(klist))
     plt.tight_layout()
-    plt.savefig(seedname+'_eigenval.pdf')
+    plt.savefig(seedname + '_eigenval.pdf')
 
 
 def main():
@@ -249,7 +257,7 @@ def main():
     nlayers, energy_array, seedname, fig_dims, plotmode, fermi_level = read_master_input()
     if plotmode == 0:
         sys.exit('You want to plot neither bands nor spectral function...'
-                'Quitting the programme...')
+                 'Quitting the programme...')
     kdists, locs, labels = read_kpoints(seedname)
     nkp = len(kdists)
     nene = len(energy_array)
@@ -268,7 +276,6 @@ def main():
         eigenvals = read_eigenvalues(seedname, nkp)
         plot_bands(eigenvals, kdists, fig_dims, fermi_level, seedname, locs,
                    labels)
-        
 
 
 if __name__ == '__main__':
