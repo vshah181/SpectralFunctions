@@ -8,8 +8,7 @@ contains
         real (real64), intent(in) :: time
         complex (real64), intent(in) :: r_ham(nbands, nbands)
         complex (real64) :: ham_t(nbands, nbands)
-        complex (real64) :: element
-        integer ::  i, ib, jb
+        integer ::  i
         real (real64) :: phase, vector_potential(3), r_real(3)
     
         r_real=0d0

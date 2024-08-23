@@ -22,7 +22,7 @@ contains
     subroutine read_input
         character(len=99) :: label, ival, line, temp_line
         integer :: i, eof, floquet_switch, bulk_switch, gf_switch, band_switch
-        open(110, file=input_file)
+        open(110, file=input_file, iostat=eof)
         e_fermi_present = .false.
         bulk=.false.
         do_floquet = .false.
@@ -119,7 +119,7 @@ contains
         character(len=99) :: line
         integer :: eof, i
 
-        open (113, file=nnkp_file)
+        open (113, file=nnkp_file, iostat=eof)
 
         do while(eof .ne. iostat_end)
             read(113, '(a)', iostat=eof) line
@@ -146,11 +146,11 @@ contains
     end subroutine read_potential
 
     subroutine read_vector_potential
-        use constants, only : pi, reduced_planck_constant_ev, tau
+        use constants, only : pi, reduced_planck_constant_ev
         integer :: eof, i
         real (real64) :: s
         character(len=99) :: label, ival, line, temp_line
-        open(115, file='vector_potential.dat')
+        open(115, file='vector_potential.dat', iostat=eof)
         do while(eof .ne. iostat_end)
             read(115, '(a)', iostat=eof) line
             temp_line=adjustl(line)

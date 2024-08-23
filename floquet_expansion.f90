@@ -19,7 +19,7 @@ implicit none
         frequency_array=cmplx(0d0, 0d0, kind=real64)
         im=max_order
         do i=1, nbands*(1+2*max_order), nbands
-            frequency_array(i:i+nbands-1)=im*hw*-1d0
+            frequency_array(i:i+nbands-1)=(-1d0)*im*hw
             im=im-1
         enddo
 

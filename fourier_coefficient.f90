@@ -8,7 +8,7 @@ implicit none
     integer, intent(in) :: nbands, m, r(3)
     real (real64), intent(in) :: t0
     complex (real64), intent(in) :: r_ham(nbands, nbands)
-    integer :: i, j
+    integer :: i
     real (real64) :: period
     complex (real64), intent(out) :: ham_m(nbands, nbands)
     

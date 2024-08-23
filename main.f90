@@ -5,7 +5,7 @@ use, intrinsic :: iso_fortran_env, only: real64, int32
 implicit none
     real (real64), allocatable :: kp(:,:), kdists(:), hsym_kdists(:)
     integer :: nkp, ik, tot_bands, nene, nf_bands, nkpar, ip, ikpar, ikgfb,    &
-        ikgfe, ikeneb, ikenee, j
+        ikgfe, ikeneb, ikenee
     integer :: ibeg, iend, pid, ncpus, ierr, extra  ! for mpi
     integer, allocatable :: sendcounts(:), displs(:)! for mpi
     integer, allocatable :: sendcounts_ene(:), displs_ene(:)! for mpi
