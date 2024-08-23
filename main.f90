@@ -46,7 +46,7 @@ implicit none
         iend=ibeg+(nkp/ncpus)-1
     endif
     nkpar=(iend-(ibeg-1))
-    if(pid .eq. 0) write(*, '(i6,x,a)') nkpar,                                 &
+    if(pid .eq. 0) write(*, '(i6,1x,1a)') nkpar,                               &
         'kpoints to be calculated on node 0'
 
     allocate(kp(nkp, 3), kdists(nkp), hsym_kdists(1+nkpath), omegas(nene))
@@ -114,7 +114,7 @@ implicit none
         MPI_DOUBLE_PRECISION, energies_glob, sendcounts_ene, displs_ene,       &
         MPI_DOUBLE_PRECISION, 0, MPI_COMM_WORLD, ierr)
 
-    if (pid .eq. 0 .and. gfplot) call write_spec_func(dimag(green_func_glob),  &
+    if (pid .eq. 0 .and. gfplot) call write_spec_func(aimag(green_func_glob),  &
         nkp, nene)
     if (pid .eq. 0 .and. bandplot) call write_energies(energies_glob, nkp,     &
         tot_bands)

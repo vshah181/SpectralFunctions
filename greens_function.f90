@@ -13,7 +13,7 @@ implicit none
     do ien=1, nene
         do ib=1, nlayers*num_bands
             eigket=eigkets(:, ib)
-            wgt_ket=dreal(eigket*dconjg(eigket))
+            wgt_ket=real(eigket*conjg(eigket))
             eigval=eigvals(ib)
             layer_num=1
             do il=1, nlayers*num_bands, num_bands
