@@ -241,6 +241,7 @@ def plot_bands(bandstructure, klist, fig_dims, fermi_level, seedname, locs,
     print('Drawing bandstructure plot...')
     fig = plt.figure(figsize=fig_dims)
     ax = fig.add_subplot(1, 1, 1)
+    ax.tick_params(direction='in')
     num_bands = bandstructure.shape[0]
     to_plot = bandstructure - fermi_level
     for i in range(num_bands):
