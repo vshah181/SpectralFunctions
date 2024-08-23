@@ -12,15 +12,13 @@ implicit none
     real (real64) :: period
     complex (real64), intent(out) :: ham_m(nbands, nbands)
     
+    ham_m=0d0
     period=tau/omega
-    ! Integrate using the trapezium rule between t0 and t0+(2pi/omega)
-    ham_m=0.5d0*(exp(cmplx(0d0, -m*omega*t0, kind=real64))*t_ham(nbands, r, t0,&
-                 r_ham)+exp(cmplx(0d0, -m*omega*(t0+period), kind=real64))     &
-                 *t_ham(nbands, r, t0+period, r_ham))
-    do i=1, n-1
-        ham_m=ham_m+(exp(cmplx(0, -m*omega*(t0+i*(period/n)), kind=real64))    &
-        *t_ham(nbands, r, (t0+i*(period/n)), r_ham))
-    enddo
-    ham_m=ham_m/n
+    ! Integrate using rectangles
+    do i=0, n-1
+        ham_m=ham_m+t_ham(nbands, r, t0+i*(period/n), r_ham)*exp(cmplx(0d0,    &
+            m*omega*(t0+i*(period/n)), kind=real64))
+    end do
+    ham_m=ham_m*(1d0/n)
 end subroutine fourier_coefficient
 

@@ -25,10 +25,10 @@ implicit none
 
     call read_kpoints ! nkpath, high_sym_pts, nkpt_per_path
     call read_hr ! r_list, r_ham_list, weights, num_r_pts, num_bands, nlayers
-                 ! do_floquet, max_order
+                 ! do_floquet
     call read_potential ! potential
     max_order=0
-    if(do_floquet) call read_vector_potential ! vector_potential
+    if(do_floquet) call read_vector_potential ! vector_potential, max_order
 
     nene=int((emax-emin)/de)
     tot_bands=num_bands*nlayers*(1+2*max_order)
