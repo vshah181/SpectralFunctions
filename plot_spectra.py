@@ -244,7 +244,7 @@ def plot_bands(bandstructure, klist, fig_dims, fermi_level, seedname, locs,
     num_bands = bandstructure.shape[0]
     to_plot = bandstructure - fermi_level
     for i in range(num_bands):
-        ax.plot(klist, to_plot[i, :], color='tab:blue')
+        ax.plot(klist, to_plot[i, :], color='#646efa')
     ax.set_ylabel(r'$E - E_F$ (eV)')
     ax.set_xlabel(r'$k\ (\mathrm{\AA}^{-1}$)')
     if len(locs) > 0:
