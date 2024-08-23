@@ -244,8 +244,6 @@ def plot_bands(bandstructure, klist, fig_dims, fermi_level, seedname, locs,
     ax.tick_params(direction='in')
     num_bands = bandstructure.shape[0]
     to_plot = bandstructure - fermi_level
-    for i in range(num_bands):
-        ax.plot(klist, to_plot[i, :], color='#646efa')
     ax.set_ylabel(r'$E - E_F$ (eV)')
     ax.set_xlabel(r'$k\ (\mathrm{\AA}^{-1}$)')
     if len(locs) > 0:
@@ -260,6 +258,8 @@ def plot_bands(bandstructure, klist, fig_dims, fermi_level, seedname, locs,
         ax.set_ylim(np.min(to_plot), np.max(to_plot))
     else:
         ax.set_ylim(band_range[0], band_range[1])
+    for i in range(num_bands):
+        ax.plot(klist, to_plot[i, :], color='#646efa')
     plt.tight_layout()
     plt.savefig(seedname + '_eigenval.pdf')
 
