@@ -1,7 +1,7 @@
 PROGRAM = spectral_function
 FTN = mpif90
 FLIB = -lblas -llapack
-FFLAGS = -O4
+FFLAGS = -O4 -Wall -Wextra
 
 CONSTNT = constants.mod
 FILE_IO = file_parsing.mod
