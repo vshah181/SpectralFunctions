@@ -20,7 +20,11 @@ contains
         enddo
         phase=dot_product(vector_potential, r_real)
         ! Igore hbar*c
-        ham_t=r_ham*cmplx(cos(phase), sin(phase), kind=real64)
+        ! ham_t=r_ham*cmplx(cos(phase), sin(phase), kind=real64)
+        ham_t=r_ham
+        do i=1, nbands
+            ham_t(i, i)=ham_t(i, i)*cmplx(cos(phase), sin(phase), kind=real64)
+        enddo
     end function t_ham
 end module peierls_substitution
 
