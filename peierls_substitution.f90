@@ -18,7 +18,7 @@ contains
         do i=1, 3
             r_real=r_real+(r(i)*avec(i, :))
         enddo
-        phase=dot_product(vector_potential, r_real)*-1d0
+        phase=dot_product(vector_potential, r_real)*(-1d0)
         ! Natural units: hbar = c = -e = 1
         ! ham_t=r_ham*cmplx(cos(phase), sin(phase), kind=real64)
         ham_t=r_ham
