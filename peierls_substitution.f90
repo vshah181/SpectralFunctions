@@ -8,7 +8,7 @@ contains
         real (real64), intent(in) :: time
         complex (real64), intent(in) :: r_ham(nbands, nbands)
         complex (real64) :: ham_t(nbands, nbands)
-        integer ::  i
+        integer ::  i, j
         real (real64) :: phase, vector_potential(3), r_real(3)
     
         r_real=0d0
@@ -18,12 +18,17 @@ contains
         do i=1, 3
             r_real=r_real+(r(i)*avec(i, :))
         enddo
-        phase=dot_product(vector_potential, r_real)
-        ! Igore hbar*c
+        phase=dot_product(vector_potential, r_real)*-1d0
+        ! Natural units: hbar = c = -e = 1
         ! ham_t=r_ham*cmplx(cos(phase), sin(phase), kind=real64)
         ham_t=r_ham
         do i=1, nbands
-            ham_t(i, i)=ham_t(i, i)*cmplx(cos(phase), sin(phase), kind=real64)
+            do j=1, nbands
+                if (j .ne. i) then
+                    ham_t(i, j)=ham_t(i, j)*cmplx(cos(phase), sin(phase),      &
+                        kind=real64)
+                endif
+            enddo
         enddo
     end function t_ham
 end module peierls_substitution
