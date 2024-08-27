@@ -107,12 +107,16 @@ implicit none
 
     call MPI_BARRIER(MPI_COMM_WORLD, ierr)
     if(pid .eq. 0) print*, 'Gathering data...'
-    if(gfplot) call MPI_GATHERV(green_func, nkpar*nlayers*nene,                &
+    if(gfplot) then 
+        call MPI_GATHERV(green_func, nkpar*nlayers*nene,                       &
         MPI_DOUBLE_COMPLEX, green_func_glob, sendcounts, displs,               &
         MPI_DOUBLE_COMPLEX, 0, MPI_COMM_WORLD, ierr)
-    if(bandplot) call MPI_GATHERV(energies, nkpar*tot_bands,                   &
+    endif
+    if(bandplot) then
+        call MPI_GATHERV(energies, nkpar*tot_bands,                            &
         MPI_DOUBLE_PRECISION, energies_glob, sendcounts_ene, displs_ene,       &
         MPI_DOUBLE_PRECISION, 0, MPI_COMM_WORLD, ierr)
+    endif
 
     if (pid .eq. 0 .and. gfplot) call write_spec_func(aimag(green_func_glob),  &
         nkp, nene)

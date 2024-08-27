@@ -2,10 +2,11 @@ module file_parsing
 use, intrinsic :: iso_fortran_env, only : iostat_end, real64
 implicit none
 private
-    character(len=99) :: hr_file, seedname, basis, nnkp_file
+    character(len=99) :: hr_file, seedname, basis, nnkp_file, wout_file
     character(len=22), parameter :: kpt_file="kpoints", input_file='INPUT'
     complex (real64), allocatable :: r_ham_list(:, :, :)
-    real (real64), allocatable :: high_sym_pts(:, :), potential(:)
+    real (real64), allocatable :: high_sym_pts(:, :), potential(:),            &
+        wannier_centres(:, :)
     real (real64) :: bvec(3, 3), avec(3, 3)
     real (real64) :: e_fermi, emin, emax, de, eta, phase_shift, omega, a_0
     integer, allocatable :: r_list(:, :), weights(:)
@@ -17,7 +18,7 @@ private
            write_spec_func, high_sym_pts, nkpath, nkpt_per_path, read_kpoints, &
            read_potential, nlayers, basis, bvec, avec, emin, emax, do_floquet, &
            a_0, potential, direction, read_vector_potential, omega, max_order, &
-           phase_shift, bulk, gfplot, bandplot, write_energies
+           phase_shift, bulk, gfplot, bandplot, write_energies, wannier_centres
 contains
     subroutine read_input
         character(len=99) :: label, ival, line, temp_line
@@ -39,6 +40,7 @@ contains
                 seedname=trim(adjustl(ival))
                 write(hr_file, fmt='(2a)') trim(adjustl(seedname)), '_hr.dat'
                 write(nnkp_file, fmt='(2a)') trim(adjustl(seedname)), '.nnkp'
+                write(wout_file, fmt='(2a)') trim(adjustl(seedname)), '.wout'
             else if(trim(adjustl(label)) .eq. 'nlayers') then
                 read(ival, *) nlayers
             else if(trim(adjustl(label)) .eq. 'basis') then
@@ -88,7 +90,8 @@ contains
         read(111, *)
         read(111, *)num_bands, num_r_pts  ! bands and number of real-points
         allocate(weights(num_r_pts), r_list(num_r_pts, 3),                     &
-                 r_ham_list(num_r_pts, num_bands, num_bands))
+                 r_ham_list(num_r_pts, num_bands, num_bands),                  &
+                 wannier_centres(num_bands, 3))
         read(111, *)weights ! degeneracy of each Wigner-Seitz grid point
         do ir=1, num_r_pts
             do o_i=1, num_bands
@@ -100,6 +103,7 @@ contains
             enddo
         enddo
         close(111)
+        call read_wout
     end subroutine read_hr
 
     subroutine read_kpoints
@@ -136,13 +140,31 @@ contains
         close(113)
     end subroutine read_nnkp
 
-    subroutine read_potential
-        integer :: i
-        open (114, file='potential.dat')
-        do i=1, nlayers
-            read(114, *) potential(i)
+    subroutine read_wout
+        character(len=99) :: line
+        integer :: eof, i
+
+        open(114, file=wout_file, iostat=eof)
+
+        do while(eof .ne. iostat_end) 
+            read(114, '(a)', iostat=eof) line
+            if (trim(adjustl(line)) .eq. "Final State") then
+                do i=1, num_bands
+                    read(114, '(a)') line
+                    read(line(31:63), *) wannier_centres(i, :)
+                enddo
+            endif
         enddo
         close(114)
+    end subroutine read_wout
+
+    subroutine read_potential
+        integer :: i
+        open (115, file='potential.dat')
+        do i=1, nlayers
+            read(115, *) potential(i)
+        enddo
+        close(115)
     end subroutine read_potential
 
     subroutine read_vector_potential
@@ -150,9 +172,9 @@ contains
         integer :: eof, i
         real (real64) :: s
         character(len=99) :: label, ival, line, temp_line
-        open(115, file='vector_potential.dat', iostat=eof)
+        open(116, file='vector_potential.dat', iostat=eof)
         do while(eof .ne. iostat_end)
-            read(115, '(a)', iostat=eof) line
+            read(116, '(a)', iostat=eof) line
             temp_line=adjustl(line)
             i=index(temp_line, ' ')
             label=temp_line(1:i)
@@ -167,7 +189,7 @@ contains
                 read(ival, *) max_order
             endif
         enddo
-        close(115)
+        close(116)
         omega = omega / reduced_planck_constant_ev ! to get it in hertz
         phase_shift = phase_shift * pi ! to get it in radians
         a_0 = (s)!/norm2(avec(1, :))
