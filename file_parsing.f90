@@ -6,7 +6,7 @@ private
     character(len=22), parameter :: kpt_file="kpoints", input_file='INPUT'
     complex (real64), allocatable :: r_ham_list(:, :, :)
     real (real64), allocatable :: high_sym_pts(:, :), potential(:),            &
-        wannier_centres(:, :)
+        projection_centres(:, :)
     real (real64) :: bvec(3, 3), avec(3, 3)
     real (real64) :: e_fermi, emin, emax, de, eta, phase_shift, omega, a_0
     integer, allocatable :: r_list(:, :), weights(:)
@@ -18,7 +18,8 @@ private
            write_spec_func, high_sym_pts, nkpath, nkpt_per_path, read_kpoints, &
            read_potential, nlayers, basis, bvec, avec, emin, emax, do_floquet, &
            a_0, potential, direction, read_vector_potential, omega, max_order, &
-           phase_shift, bulk, gfplot, bandplot, write_energies, wannier_centres
+           phase_shift, bulk, gfplot, bandplot, write_energies,                &
+           projection_centres
 contains
     subroutine read_input
         character(len=99) :: label, ival, line, temp_line
@@ -84,14 +85,13 @@ contains
         real (real64) :: rp, ip
 
         call read_input
-        call read_nnkp
 
         open(111, file=hr_file)
         read(111, *)
         read(111, *)num_bands, num_r_pts  ! bands and number of real-points
         allocate(weights(num_r_pts), r_list(num_r_pts, 3),                     &
                  r_ham_list(num_r_pts, num_bands, num_bands),                  &
-                 wannier_centres(num_bands, 3))
+                 projection_centres(num_bands, 3))
         read(111, *)weights ! degeneracy of each Wigner-Seitz grid point
         do ir=1, num_r_pts
             do o_i=1, num_bands
@@ -103,7 +103,7 @@ contains
             enddo
         enddo
         close(111)
-        call read_wout
+        call read_nnkp
     end subroutine read_hr
 
     subroutine read_kpoints
@@ -120,8 +120,8 @@ contains
     end subroutine read_kpoints
 
     subroutine read_nnkp
-        character(len=99) :: line
-        integer :: eof, i
+        character(len=99) :: line, temp_line
+        integer :: eof, i, num_proj 
 
         open (113, file=nnkp_file, iostat=eof)
 
@@ -135,28 +135,22 @@ contains
                 do i=1, 3
                     read(113, *, iostat=eof) bvec(i, :)
                 enddo
+            else if (trim(adjustl(line)) .eq. 'begin projections') then
+                read(113, *) num_proj
+                do i=1, num_proj
+                    read(113, *) projection_centres(i, :)
+                    read(113, *) temp_line
+                enddo
+                if (num_proj*2 .eq. num_bands) then
+                    do i=1, num_proj
+                        projection_centres(i+num_proj, :)                      &
+                            =projection_centres(i, :) 
+                    enddo
+                endif
             endif
         enddo
         close(113)
     end subroutine read_nnkp
-
-    subroutine read_wout
-        character(len=99) :: line
-        integer :: eof, i
-
-        open(114, file=wout_file, iostat=eof)
-
-        do while(eof .ne. iostat_end) 
-            read(114, '(a)', iostat=eof) line
-            if (trim(adjustl(line)) .eq. "Final State") then
-                do i=1, num_bands
-                    read(114, '(a)') line
-                    read(line(31:63), *) wannier_centres(i, :)
-                enddo
-            endif
-        enddo
-        close(114)
-    end subroutine read_wout
 
     subroutine read_potential
         integer :: i

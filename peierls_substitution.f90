@@ -1,6 +1,6 @@
 module peierls_substitution
 use, intrinsic :: iso_fortran_env, only: real64 
-use file_parsing, only: wannier_centres
+use file_parsing, only: projection_centres
 implicit none
 contains
     function t_ham(nbands, r, time, r_ham) result(ham_t)
@@ -22,9 +22,9 @@ contains
             do j=1, nbands
                 r_real=0d0
                 do k=1, 3
-                    r_real=r_real+(r(k)*avec(k, :))
+                    r_real=r_real+((r(k)+projection_centres(j, k)              &
+                          -projection_centres(i, k))*avec(k, :))
                 enddo
-                r_real=r_real+(wannier_centres(j, :)-wannier_centres(i, :))
                 phase=dot_product(vector_potential, r_real)
                 ham_t(i, j)=ham_t(i, j)*cmplx(cos(phase), sin(phase),          &
                     kind=real64)
