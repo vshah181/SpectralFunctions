@@ -10,7 +10,6 @@ private
     real (real64) :: bvec(3, 3), avec(3, 3)
     real (real64) :: e_fermi, emin, emax, de, eta, phase_shift, omega, a_0
     integer, allocatable :: r_list(:, :), weights(:)
-    character, allocatable :: high_sym_pt_symbols(:)
     integer :: num_bands, num_r_pts, nkpt_per_path, nkpath, nlayers, direction,&
         max_order
     logical :: e_fermi_present, do_floquet, bulk, bandplot, gfplot
@@ -111,9 +110,9 @@ contains
         open(112, file=kpt_file)
         read(112, *) nkpt_per_path
         read(112, *) nkpath
-        allocate(high_sym_pts(nkpath, 3), high_sym_pt_symbols(nkpath))
+        allocate(high_sym_pts(nkpath, 3))
         do i=1, nkpath
-            read(112, *) high_sym_pts(i, :), high_sym_pt_symbols(i)
+            read(112, *) high_sym_pts(i, :)
         enddo
         close(112)
         nkpath=nkpath-1
