@@ -65,7 +65,7 @@ In this example, there are 200 kpoints in total and we go along the X - $\Gamma$
 
 # Dependency List
 - Fortran compiler (ifort recommended. Also tested on gfortran and cray compiler)
-- Blas and lapack implementation (intel math kernel library recommended)
+- Blas and lapack implementation (intel math kernel library recommended, also works with cray libsci)
 - MPI implementation (mpich or OpenMPI)
 - Python $\geq$ 3.7.2
 - Numpy
