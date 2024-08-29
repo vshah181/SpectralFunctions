@@ -218,7 +218,7 @@ def plot_spectra(layer1, layer2, spectral_function, klist, omegas, seedname,
     ax = fig.add_subplot(1, 1, 1)
     yy, xx = np.meshgrid(omegas, klist)
     print('Drawing spectral plot...')
-    ax.pcolormesh(xx, yy, plot_func[:, :].T, shading='gouraud', cmap='Purples',
+    ax.pcolormesh(xx, yy, plot_func[:, :].T, shading='gouraud', cmap='inferno',
                   norm=LogNorm(vmin=plot_func.min(), vmax=plot_func.max()))
     ax.set_title(fig_title)
     ax.set_ylabel(r'$E - E_F$ (eV)')
