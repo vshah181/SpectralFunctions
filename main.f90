@@ -10,7 +10,7 @@ implicit none
     integer, allocatable :: sendcounts(:), displs(:)! for mpi
     integer, allocatable :: sendcounts_ene(:), displs_ene(:)! for mpi
     integer (int32):: info, lwork
-    real (real64), allocatable :: rwork(:), energies(:), omegas(:),         &
+    real (real64), allocatable :: rwork(:), energies(:), omegas(:),            &
         energies_glob(:)
     complex (real64), allocatable :: work(:), kham(:, :), green_func(:),       &
         green_func_glob(:), floquet_ham_list(:, :, :)
