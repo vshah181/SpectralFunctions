@@ -17,7 +17,7 @@ There are four compulsory input files. There is also an optional fifth input fil
 1. *seedname* (eg KTaO<sub>3</sub>, SrTiO<sub>3</sub>, BiTeI etc...)
 2. The number of layers, to break translational symmetry along an axis.
 3. The direction along which to break symmetry (1=x, 2=y, 3=z)
-4. The basis, the current version of wannier90 the hr file in the up, down, up down... basis whereas the old version writes up, up ..., up, down, down, ..., down
+4. The basis, the current version of wannier90 the hr file in the up, down, up down... basis whereas the old version (1.2) writes up, up ..., up, down, down, ..., down
 5. The fermi level in electron-volts. This is an optional tag. If specified, this value will be subtracted from the energies when the band structure is plotted 
 6. The energy range in which to compute the spectral function
 7. The broadening factor
