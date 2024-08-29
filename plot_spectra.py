@@ -139,7 +139,7 @@ def read_kpoints(seedname):
         try:
             hsym_chars.append(line[3].upper())
         except IndexError:
-            pass
+            hsym_chars.append(' ')
     f.close()
     for i in range(n_hsym_pts):
         abs_hsym_pts[i, :] = hsym_pts[i, 0] * bvec[0, :] \
@@ -153,13 +153,14 @@ def read_kpoints(seedname):
             kdists[jk + 1] = np.linalg.norm(abs_dk) + kdists[jk]
             jk += 1
     kdists -= kdists[kpt_per_path]
-    if len(hsym_chars) == len(hsym_pts):
-        for i in range(n_hsym_pts):
+    for i in range(n_hsym_pts):
+        if hsym_chars[i] != ' ':
             locs.append(kdists[i * kpt_per_path])
-            if hsym_chars[i] == 'GAMMA':
-                hsym_chars[i] = chr(915)  # Greek letter capital gamma
-            elif hsym_chars[i] == 'SIGMA':
-                hsym_chars[i] = chr(931)
+        if hsym_chars[i] == 'GAMMA':
+            hsym_chars[i] = chr(915)  # Greek letter capital gamma
+        elif hsym_chars[i] == 'SIGMA':
+            hsym_chars[i] = chr(931)
+    hsym_chars.remove(' ')
     return kdists, locs, hsym_chars
 
 
@@ -222,7 +223,11 @@ def plot_spectra(layer1, layer2, spectral_function, klist, omegas, seedname,
                   norm=LogNorm(vmin=plot_func.min(), vmax=plot_func.max()))
     ax.set_title(fig_title)
     ax.set_ylabel(r'$E - E_F$ (eV)')
-    ax.set_xlabel(r'$k\ (\mathrm{\AA}^{-1}$)')
+    if len(locs) > 0:
+        ax.set_xticks(locs, labels)
+        ax.set_xlabel('')
+    else:
+        ax.set_xlabel(r'$k\ (\mathrm{\AA}^{-1}$)')
     plt.tight_layout()
     plt.savefig(filename, dpi=350)
 
