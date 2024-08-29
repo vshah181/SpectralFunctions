@@ -64,7 +64,7 @@ In this example, there are 200 kpoints in total and we go along the X - $\Gamma$
     max_order       2
 
 # Dependency List
-- Fortran compiler (ifort recommended. Also tested on gnu compiler)
+- Fortran compiler (ifort recommended. Also tested on gfortran and cray compiler)
 - Blas and lapack implementation (intel math kernel library recommended)
 - MPI implementation (mpich or OpenMPI)
 - Python $\geq$ 3.7.2
