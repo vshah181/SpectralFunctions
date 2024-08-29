@@ -1,5 +1,5 @@
 # Spectral Function
-Plot the surface-pojected spectral functions of wannier90 _hr.dat files using Fortran and gnuplot
+Plot the surface-pojected spectral functions of wannier90 _hr.dat files using Fortran and python
 
 *Input files:* 
 There are four compulsory input files. There is also an optional fifth input file
