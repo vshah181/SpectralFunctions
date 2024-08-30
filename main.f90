@@ -101,7 +101,7 @@ implicit none
         call zheev('V', 'L', tot_bands, kham, tot_bands,                       &
             energies(ikeneb:ikenee), work, lwork, rwork, info)
         if(gfplot) call greens_function(nene, nlayers, nf_bands, omegas, kham, &
-            energies(ikeneb:ikenee), eta, green_func(ikgfb:ikgfe), num_bands)
+            energies(ikeneb:ikenee), eta, green_func(ikgfb:ikgfe))
         if(pid .eq. 0) print*, 'done'
     enddo
 
