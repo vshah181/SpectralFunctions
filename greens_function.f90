@@ -18,7 +18,7 @@ implicit none
             layer_num=1
             do il=1, nlayers*num_bands, num_bands
                 ig=layer_num+(nlayers*(ien-1))
-                numerator=sum(wgt_ket(il:il+(num_orbs-1)))
+                numerator=sum(wgt_ket(il:il+(num_bands-1)))
                 denominator=eigval-omegas(ien)-cmplx(0d0, eta, kind=real64)
                 green_func(ig)=green_func(ig)+(numerator/denominator)
                 layer_num=layer_num+1
