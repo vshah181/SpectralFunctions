@@ -9,7 +9,8 @@ implicit none
     integer :: ibeg, iend, pid, ncpus, ierr, extra  ! for mpi
     integer, allocatable :: sendcounts(:), displs(:)! for mpi
     integer, allocatable :: sendcounts_ene(:), displs_ene(:)! for mpi
-    integer (int32):: info, lwork
+    integer (int32):: info, lwork, liwork, lrwork
+    integer (int32), allocatable :: iwork(:)
     real (real64), allocatable :: rwork(:), energies(:), omegas(:),            &
         energies_glob(:)
     complex (real64), allocatable :: work(:), kham(:, :), green_func(:),       &
@@ -83,8 +84,16 @@ implicit none
     call floquet_expansion(max_order, num_bands, num_r_pts, r_ham_list,        &
         floquet_ham_list, r_list)
 
-    lwork=max(1, 2*tot_bands-1)
-    allocate(work(max(1, lwork)), rwork(max(1, 3*tot_bands-2)))
+    if (tot_bands .lt. 500) then
+        lwork=max(1, 2*tot_bands-1)
+        allocate(work(max(1, lwork)), rwork(max(1, 3*tot_bands-2)))
+    else
+        lwork=max(1, (2+tot_bands)*tot_bands)
+        lrwork=max(1, ((2*tot_bands*tot_bands)+(5*tot_bands)+1))
+        liwork=max(1, ((5*tot_bands)+3))
+        allocate(work(max(1, lwork)), rwork(max(1, lrwork)), iwork(max(1,      &
+            liwork)))
+    endif
 
     if(gfplot) green_func=cmplx(0d0, 0d0, kind=real64)
     do ik=ibeg, iend
@@ -98,8 +107,14 @@ implicit none
         call ft_ham_r(nf_bands, kp(ik, :), kham, r_list, weights,              &
             floquet_ham_list, num_r_pts, nlayers)
         ! call add_potential(kham, nlayers, num_bands)
-        call zheev('V', 'L', tot_bands, kham, tot_bands,                       &
-            energies(ikeneb:ikenee), work, lwork, rwork, info)
+        if(tot_bands .lt. 500) then
+            call zheev('V', 'L', tot_bands, kham, tot_bands,                   &
+                energies(ikeneb:ikenee), work, lwork, rwork, info)
+        else
+            call zheevd('V', 'L', tot_bands, kham, tot_bands,                  &
+            energies(ikeneb:ikenee), work, lwork, rwork, lrwork, iwork, liwork,&
+            info)
+        endif
         if(gfplot) call greens_function(nene, nlayers, nf_bands, omegas, kham, &
             energies(ikeneb:ikenee), eta, green_func(ikgfb:ikgfe))
         if(pid .eq. 0) print*, 'done'
