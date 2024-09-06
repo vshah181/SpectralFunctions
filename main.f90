@@ -78,8 +78,8 @@ implicit none
     endif
 
     allocate(energies(tot_bands*nkpar), kham(tot_bands, tot_bands),            &
-        green_func(nene*nkpar*nlayers), floquet_ham_list(num_r_pts, tot_bands, &
-        tot_bands))
+        green_func(nene*nkpar*nlayers), floquet_ham_list(num_r_pts, nf_bands,  &
+        nf_bands))
     call floquet_expansion(max_order, num_bands, num_r_pts, r_ham_list,        &
         floquet_ham_list, r_list)
 
