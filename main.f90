@@ -80,20 +80,15 @@ implicit none
 
     allocate(energies(tot_bands*nkpar), kham(tot_bands, tot_bands),            &
         green_func(nene*nkpar*nlayers), floquet_ham_list(num_r_pts, nf_bands,  &
-        nf_bands))
+            nf_bands))
     call floquet_expansion(max_order, num_bands, num_r_pts, r_ham_list,        &
         floquet_ham_list, r_list)
 
-    if (tot_bands .lt. 500) then
-        lwork=max(1, 2*tot_bands-1)
-        allocate(work(max(1, lwork)), rwork(max(1, 3*tot_bands-2)))
-    else
-        lwork=max(1, (2+tot_bands)*tot_bands)
-        lrwork=max(1, ((2*tot_bands*tot_bands)+(5*tot_bands)+1))
-        liwork=max(1, ((5*tot_bands)+3))
-        allocate(work(max(1, lwork)), rwork(max(1, lrwork)), iwork(max(1,      &
-            liwork)))
-    endif
+    ! Allocate things for zheevd
+    lwork=max(1, (2+tot_bands)*tot_bands)
+    lrwork=max(1, ((2*tot_bands*tot_bands)+(5*tot_bands)+1))
+    liwork=max(1, ((5*tot_bands)+3))
+    allocate(work(max(1, lwork)), rwork(max(1, lrwork)), iwork(max(1, liwork)))
 
     if(gfplot) green_func=cmplx(0d0, 0d0, kind=real64)
     do ik=ibeg, iend
@@ -107,14 +102,9 @@ implicit none
         call ft_ham_r(nf_bands, kp(ik, :), kham, r_list, weights,              &
             floquet_ham_list, num_r_pts, nlayers)
         ! call add_potential(kham, nlayers, num_bands)
-        if(tot_bands .lt. 500) then
-            call zheev('V', 'L', tot_bands, kham, tot_bands,                   &
-                energies(ikeneb:ikenee), work, lwork, rwork, info)
-        else
-            call zheevd('V', 'L', tot_bands, kham, tot_bands,                  &
-            energies(ikeneb:ikenee), work, lwork, rwork, lrwork, iwork, liwork,&
-            info)
-        endif
+        call zheevd('V', 'L', tot_bands, kham, tot_bands,                      &
+        energies(ikeneb:ikenee), work, lwork, rwork, lrwork, iwork, liwork,    &
+        info) ! Just because it's better than zheev for large matrices
         if(gfplot) call greens_function(nene, nlayers, nf_bands, omegas, kham, &
             energies(ikeneb:ikenee), eta, green_func(ikgfb:ikgfe))
         if(pid .eq. 0) print*, 'done'
