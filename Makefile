@@ -1,7 +1,5 @@
 PROGRAM = spectral_function
-FTN = mpiifort
-FLIB = -qmkl
-FFLAGS = -O3 -warn all -stand=f08 -xHOST
+include make.sys
 
 CONSTNT = constants.mod
 FILE_IO = file_parsing.mod
