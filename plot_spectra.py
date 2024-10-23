@@ -160,7 +160,10 @@ def read_kpoints(seedname):
             hsym_chars[i] = chr(915)  # Greek letter capital gamma
         elif hsym_chars[i] == 'SIGMA':
             hsym_chars[i] = chr(931)
-    hsym_chars.remove(' ')
+    try:
+        hsym_chars.remove(' ')
+    except ValueError:
+        pass
     return kdists, locs, hsym_chars
 
 

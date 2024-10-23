@@ -12,13 +12,13 @@ private
     integer, allocatable :: r_list(:, :), weights(:)
     integer :: num_bands, num_r_pts, nkpt_per_path, nkpath, nlayers, direction,&
         max_order
-    logical :: e_fermi_present, do_floquet, bulk, bandplot, gfplot
+    logical :: e_fermi_present, do_floquet, bulk, bandplot, gfplot, use_soc
     public num_bands, num_r_pts, weights, r_list, r_ham_list, read_hr, eta, de,&
            write_spec_func, high_sym_pts, nkpath, nkpt_per_path, read_kpoints, &
            read_potential, nlayers, basis, bvec, avec, emin, emax, do_floquet, &
            a_0, potential, direction, read_vector_potential, omega, max_order, &
            phase_shift, bulk, gfplot, bandplot, write_energies,                &
-           projection_centres
+           projection_centres 
 contains
     subroutine read_input
         character(len=99) :: label, ival, line, temp_line
@@ -26,6 +26,7 @@ contains
         open(110, file=input_file, iostat=eof)
         e_fermi_present = .false.
         bulk=.false.
+        use_soc = .false.
         do_floquet = .false.
         gfplot = .false.
         bandplot = .false.
@@ -68,6 +69,8 @@ contains
             else if(trim(adjustl(label)) .eq. 'spectra_plot') then
                 read(ival, *) gf_switch
                 if(gf_switch .eq. 1) gfplot=.true.
+            else if(trim(adjustl(label)) .eq. 'soc') then
+                read(ival, *) use_soc
             endif
         enddo
         close(110)
@@ -140,12 +143,19 @@ contains
                     read(113, *) projection_centres(i, :)
                     read(113, *) temp_line
                 enddo
-                if (num_proj*2 .eq. num_bands) then
+                if ((num_proj*2 .eq. num_bands) .and. (basis.eq.'uudd')) then
                     do i=1, num_proj
                         projection_centres(i+num_proj, :)                      &
                             =projection_centres(i, :) 
                     enddo
                 endif
+            else if (trim(adjustl(line)) .eq. "begin spinor_projections") then
+                read(113, *) num_proj
+                do i=1, num_proj
+                    read(113, *) projection_centres(i,:)
+                    read(113, *) temp_line
+                    read(113, *) temp_line
+                enddo
             endif
         enddo
         close(113)

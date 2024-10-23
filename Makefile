@@ -1,7 +1,7 @@
 PROGRAM = spectral_function
-FTN = mpif90
-FLIB = -lblas -llapack
-FFLAGS = -O4 -Wall -Wextra -Wpedantic -std=f2008
+FTN = mpiifort
+FLIB = -qmkl
+FFLAGS = -O3 -warn all -stand=f08 -xHOST
 
 CONSTNT = constants.mod
 FILE_IO = file_parsing.mod
