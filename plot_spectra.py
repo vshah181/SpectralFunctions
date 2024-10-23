@@ -59,6 +59,7 @@ def read_master_input():
     emax = 0.0
     energy_step = 1.0
     seedname = 'seedname'
+    colourmap = 'inferno'
     fig_dimensions = np.empty([2])
     band_range = np.zeros([2])
     with open('INPUT', 'r', encoding='utf-8') as f:
@@ -84,6 +85,8 @@ def read_master_input():
             elif split_line[0] == 'band_yrange':
                 band_range[0] = float(split_line[1])
                 band_range[1] = float(split_line[2])
+            elif split_line[0] == 'colourmap':
+                colourmap=split_line[1]
     if band_switch == 1 and gf_switch == 1:
         plotmode = 3
     elif band_switch == 1 and gf_switch != 1:
@@ -91,7 +94,8 @@ def read_master_input():
     elif band_switch != 1 and gf_switch == 1:
         plotmode = 2
     energy_array = make_energy_array(emin, emax, energy_step, fermi_level)
-    return nlayers, energy_array, seedname, fig_dimensions, plotmode, fermi_level, band_range
+    return nlayers, energy_array, seedname, fig_dimensions, plotmode,\
+    fermi_level, band_range, colourmap
 
 
 def read_hr(seedname):
@@ -160,10 +164,11 @@ def read_kpoints(seedname):
             hsym_chars[i] = chr(915)  # Greek letter capital gamma
         elif hsym_chars[i] == 'SIGMA':
             hsym_chars[i] = chr(931)
-    try:
-        hsym_chars.remove(' ')
-    except ValueError:
-        pass
+    while True:
+        try:
+            hsym_chars.remove(' ')
+        except ValueError:
+            break
     return kdists, locs, hsym_chars
 
 
@@ -197,7 +202,7 @@ def read_eigenvalues(seedname, nkp):
 
 
 def plot_spectra(layer1, layer2, spectral_function, klist, omegas, seedname,
-                 fig_dims, locs, labels):
+                 fig_dims, locs, labels, colourmap):
     """
     Draw the graph and save as raster image.
     :param layer1: First unit cell
@@ -222,7 +227,7 @@ def plot_spectra(layer1, layer2, spectral_function, klist, omegas, seedname,
     ax = fig.add_subplot(1, 1, 1)
     yy, xx = np.meshgrid(omegas, klist)
     print('Drawing spectral plot...')
-    ax.pcolormesh(xx, yy, plot_func[:, :].T, shading='gouraud', cmap='inferno',
+    ax.pcolormesh(xx, yy, plot_func[:, :].T, shading='gouraud', cmap=colourmap,
                   norm=LogNorm(vmin=plot_func.min(), vmax=plot_func.max()))
     ax.set_title(fig_title)
     ax.set_ylabel(r'$E - E_F$ (eV)')
@@ -274,7 +279,8 @@ def plot_bands(bandstructure, klist, fig_dims, fermi_level, seedname, locs,
 
 def main():
     # Initialise all the variables from the input files
-    nlayers, energy_array, seedname, fig_dims, plotmode, fermi_level, band_range = read_master_input()
+    nlayers, energy_array, seedname, fig_dims, plotmode, fermi_level,\
+            band_range, colourmap = read_master_input()
     if plotmode == 0:
         sys.exit('You want to plot neither bands nor spectral function...'
                  'Quitting the programme...')
@@ -290,7 +296,7 @@ def main():
         print('Reading spectral data...')
         spectral_function = read_spectral_function(seedname, nene, nkp, nlayers)
         plot_spectra(layer_index1, layer_index2, spectral_function, kdists,
-                     energy_array, seedname, fig_dims, locs, labels)
+                     energy_array, seedname, fig_dims, locs, labels, colourmap)
     if plotmode != 2:
         print('Reading eigenvalues...')
         eigenvals = read_eigenvalues(seedname, nkp)
