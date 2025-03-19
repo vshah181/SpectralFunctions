@@ -1,5 +1,5 @@
-program spectral_function
-use mpi
+program spectral_function 
+use mpi_f08
 use file_parsing
 use, intrinsic :: iso_fortran_env, only: real64, int32
 implicit none
@@ -10,11 +10,11 @@ implicit none
     integer, allocatable :: sendcounts(:), displs(:)! for mpi
     integer, allocatable :: sendcounts_ene(:), displs_ene(:)! for mpi
     integer (int32):: info, lwork, liwork, lrwork
-    integer (int32), allocatable :: iwork(:)
-    real (real64), allocatable :: rwork(:), energies(:), omegas(:),            &
+    integer (int32), allocatable :: tiwork(:), iwork(:)
+    real (real64), allocatable :: trwork(:), rwork(:), energies(:), omegas(:), &
         energies_glob(:)
-    complex (real64), allocatable :: work(:), kham(:, :), green_func(:),       &
-        green_func_glob(:), floquet_ham_list(:, :, :)
+    complex (real64), allocatable :: twork(:), work(:), kham(:, :),            &
+        green_func(:), green_func_glob(:), floquet_ham_list(:, :, :)
 
     ! Initialise MPI here
     call MPI_INIT(ierr)
@@ -85,10 +85,11 @@ implicit none
         floquet_ham_list, r_list)
 
     ! Allocate things for zheevd
-    lwork=max(1, (2+tot_bands)*tot_bands)
-    lrwork=max(1, ((2*tot_bands*tot_bands)+(5*tot_bands)+1))
-    liwork=max(1, ((5*tot_bands)+3))
-    allocate(work(max(1, lwork)), rwork(max(1, lrwork)), iwork(max(1, liwork)))
+    lwork=-1
+    lrwork=-1
+    liwork=-1
+    allocate(twork(max(1, lwork)), trwork(max(1, lrwork)),                     &
+        tiwork(max(1, liwork)))
 
     if(gfplot) green_func=cmplx(0d0, 0d0, kind=real64)
     do ik=ibeg, iend
@@ -102,6 +103,16 @@ implicit none
         call ft_ham_r(nf_bands, kp(ik, :), kham, r_list, weights,              &
             floquet_ham_list, num_r_pts, nlayers)
         ! call add_potential(kham, nlayers, num_bands)
+        if(.not.(allocated(work) .and. allocated(rwork)                        &
+            .and. allocated(iwork))) then
+            call zheevd('V', 'L', tot_bands, kham, tot_bands,                  &
+                energies(ikeneb:ikenee), twork, lwork, trwork, lrwork, tiwork, &
+                liwork, info) 
+            lwork=int(twork(1))
+            lrwork=int(trwork(1))
+            liwork=tiwork(1)
+            allocate(work(lwork), rwork(lrwork), iwork(liwork))
+        endif
         call zheevd('V', 'L', tot_bands, kham, tot_bands,                      &
         energies(ikeneb:ikenee), work, lwork, rwork, lrwork, iwork, liwork,    &
         info) ! Just because it's better than zheev for large matrices
