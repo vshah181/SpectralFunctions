@@ -112,12 +112,12 @@ implicit none
             ldz = tot_bands
             if(.not.(allocated(work) .and. allocated(rwork)                    &
                 .and. allocated(iwork))) then
-                call ZHBEVD_2STAGE('V', 'U', tot_bands, kd, ab, ldab,          &
+                call ZHBEVD('V', 'U', tot_bands, kd, ab, ldab,          &
                     energies(ikeneb:ikenee), kham, ldz, twork, lwork, trwork,  &
                     lrwork, tiwork, liwork, info)
                 allocate(work(lwork), rwork(lrwork), iwork(liwork))
             endif
-            call ZHBEVD_2STAGE('V', 'U', tot_bands, kd, ab, ldab,              &
+            call ZHBEVD('V', 'U', tot_bands, kd, ab, ldab,              &
                 energies(ikeneb:ikenee), kham, ldz, work, lwork, rwork, lrwork,&
                 iwork, liwork, info)
         else
