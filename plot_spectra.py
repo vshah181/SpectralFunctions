@@ -216,19 +216,20 @@ def plot_spectra(layer1, layer2, spectral_function, klist, omegas, seedname,
     """
     if layer1 != layer2:
         fig_title = f'Layer = {layer1}-{layer2}'
-        filename = f'{seedname}_layer_{layer1}-{layer2}.png'
+        filename = f'{seedname}_layer_{layer1}-{layer2}.pdf'
         plot_func = np.sum(spectral_function[layer1 - 1:layer2, :, :], axis=0)
     else:
         layer = layer2
         fig_title = f'Layer = {layer}'
-        filename = f'{seedname}_layer_{layer}.png'
+        filename = f'{seedname}_layer_{layer}.pdf'
         plot_func = spectral_function[layer - 1, :, :]
-    fig = plt.figure(figsize=fig_dims)
+    fig = plt.figure(figsize=fig_dims, dpi=400)
     ax = fig.add_subplot(1, 1, 1)
     yy, xx = np.meshgrid(omegas, klist)
     print('Drawing spectral plot...')
     ax.pcolormesh(xx, yy, plot_func[:, :].T, shading='gouraud', cmap=colourmap,
-                  norm=LogNorm(vmin=plot_func.min(), vmax=plot_func.max()))
+                  norm=LogNorm(vmin=plot_func.min(), vmax=plot_func.max()), 
+                  rasterized=True, antialiased=True)
     ax.set_title(fig_title)
     ax.set_ylabel(r'$E - E_F$ (eV)')
     if len(locs) > 0:
@@ -237,7 +238,7 @@ def plot_spectra(layer1, layer2, spectral_function, klist, omegas, seedname,
     else:
         ax.set_xlabel(r'$k\ (\mathrm{\AA}^{-1}$)')
     plt.tight_layout()
-    plt.savefig(filename, dpi=350)
+    plt.savefig(filename)
 
 
 def plot_bands(bandstructure, klist, fig_dims, fermi_level, seedname, locs,
