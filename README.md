@@ -15,23 +15,42 @@ There are four compulsory input files. There is also an optional fifth input fil
 ## Master input file
 - This file needs the filename 'INPUT'
 1. *seedname* (eg KTaO<sub>3</sub>, SrTiO<sub>3</sub>, BiTeI etc...)
-2. The number of layers, to break translational symmetry along an axis.
-3. The direction along which to break symmetry (1=x, 2=y, 3=z)
-4. The basis, the current version of wannier90 the hr file in the up, down, up down... basis whereas the old version (1.2) writes up, up ..., up, down, down, ..., down
-5. The fermi level in electron-volts. This is an optional tag. If specified, this value will be subtracted from the energies when the band structure is plotted 
-6. The energy range in which to compute the spectral function
-7. The broadening factor
-8. The step size in electronvolts for the energy window
-9. The output figure size in inches (this will only be read by the python script)
-10. Whether or not to do construct a Floquet-Hamilotonian. This requires an addition input file: vector_potential.dat
+2. The fermi level in electron-volts. This is an optional tag. If specified, this value will be subtracted from the energies when the band structure is plotted 
+3. The energy range in which to compute the spectral function
+4. The step size in electronvolts for the energy window
+5. The broadening factor
+6. The bulk switch (1 = do a bulk calculation, 0 = break translational symmetry along a specified direction)
+7. The number of layers, to break translational symmetry along an axis. (Ignored if bulk = 1)
+8. The direction along which to break symmetry (1 = break transational symmetry along a1 axis, 2 = break translational symmetry along a2 axis. Ignored if bulk = 1)
+9. floquet: Whether to do a floquet calculation or not (1 = True, 0 = False)
+10. soc: Whether soc is included in the tight-binding hamiltonian (1 = True, 0 = False)
+11. basis: [uudd or udud] for the spin. These are different depending on which version of wannier90 was used.
+12. figsize (two numbers): the figures size in inches
+13. colourmap: which colourmap to plot the spectral function with
+14. band_yrange: y limits for the band structure plot
+15. bands_plot: whether we need to plot the band structure or not
+16. spectra_plot: whether to plot the spectral_function or not
 ### Example
-    seedname           EuPb
-    nlayers            30
-    basis              uudd
-    e_fermi            6.6393567
-    energy_range       5.6  8.0
-    broadening_factor  0.003
+    seedname           mote2
+    e_fermi           -0.5381
+    #################################################
+    energy_range      -3.3320632588 -0.3320632588
     energy_step        0.0003
+    broadening_factor  0.00005
+    #################################################
+    bulk               1
+    nlayers            50
+    direction          2
+    floquet            1
+    #################################################
+    soc                .true.
+    basis              uudd
+    ################# for the plot ##################
+    figsize            4 4
+    colourmap          inferno
+    band_yrange        -0.6 0.6
+    bands_plot         1
+    spectra_plot       0
 *Spaces must be used for separation! Tabs will cause errors!*
 
 ## kpoints file
