@@ -2,8 +2,7 @@
 
 Plot the surface-pojected spectral functions of wannier90 _hr.dat files using Fortran and python
 
-## Compilation
-
+# Compilation
 You will need to create a file called `make.sys`
 Here is an example for intel oneapi:
 ```
@@ -16,6 +15,8 @@ FFLAGS := -O3 -warn all -stand f08 -xHOST
 # Additional libraries
 FLIB := -qmkl
 ```
+
+# Usage
 *Input files:* 
 There are four compulsory input files. There is also an optional fifth input file
 - First is the master input file.
