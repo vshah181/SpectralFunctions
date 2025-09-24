@@ -1,6 +1,21 @@
 # Spectral Function
 Plot the surface-pojected spectral functions of wannier90 _hr.dat files using Fortran and python
 
+# Compilation
+You will need to create a file called `make.sys`
+Here is an example for intel oneapi:
+```
+# make.sys for production
+
+# Compiler settings
+FTN := mpiifx
+FFLAGS := -O3 -warn all -stand f08 -xHOST
+
+# Additional libraries
+FLIB := -qmkl
+```
+
+# Usage
 *Input files:* 
 There are four compulsory input files. There is also an optional fifth input file
 - First is the master input file.
@@ -31,7 +46,7 @@ There are four compulsory input files. There is also an optional fifth input fil
 15. bands_plot: whether we need to plot the band structure or not
 16. spectra_plot: whether to plot the spectral_function or not
 ### Example
-    seedname           mote2
+    seedname           MoTe2
     e_fermi           -0.5381
     #################################################
     energy_range      -3.3320632588 -0.3320632588
