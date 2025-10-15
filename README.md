@@ -44,8 +44,9 @@ There are four compulsory input files. There is also an optional fifth input fil
 12. figsize (two numbers): the figures size in inches
 13. colourmap: which colourmap to plot the spectral function with
 14. band_yrange: y limits for the band structure plot
-15. bands_plot: whether we need to plot the band structure or not
-16. spectra_plot: whether to plot the spectral_function or not
+15. spectra_y_range: y limits for the spectral function plot
+16. bands_plot: whether we need to plot the band structure or not
+17. spectra_plot: whether to plot the spectral_function or not
 ### Example
     seedname           MoTe2
     e_fermi           -0.5381
@@ -65,6 +66,7 @@ There are four compulsory input files. There is also an optional fifth input fil
     figsize            4 4
     colourmap          inferno
     band_yrange        -0.6 0.6
+    spectra_yrange     -1.0 1.0
     bands_plot         1
     spectra_plot       0
 *Spaces must be used for separation! Tabs will cause errors!*
