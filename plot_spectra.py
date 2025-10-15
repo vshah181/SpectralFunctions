@@ -174,15 +174,15 @@ def read_kpoints(seedname):
 
 def read_spectral_function(seedname, nene, nkp, nlayers):
     """
-    Read the input from the spectral function text file
+    Read the input from the spectral function binary file
     :param seedname: the name of the system (string)
     :param nene: number of energies in the y axis
     :param nkp:  number of kpoints in the x axis
     :param nlayers: number of unit-cells used to model the system
     :return: spectral_function (ndarray(dtype=float))
     """
-    filename = seedname + '_spec_func.dat'
-    spectral_function_1d = np.loadtxt(filename)
+    filename = seedname + '_spec_func.bin'
+    spectral_function_1d = np.fromfile(filename, dtype=np.float64)
     spectral_function = np.reshape(spectral_function_1d, (nlayers, nene, nkp),
                                    order='F')
     return spectral_function
@@ -190,12 +190,12 @@ def read_spectral_function(seedname, nene, nkp, nlayers):
 
 def read_eigenvalues(seedname, nkp):
     """
-    Read the plaintext file with the eigenvalue data
+    Read the binary file with the eigenvalue data
     :param seedname: the name of the system (string)
     :param nkp: number of k points - x axis
     :return: eigenvals: (ndarray(dtype=float))
     """
-    eigenvals_1d = np.loadtxt(seedname + '_eigenval.dat')
+    eigenvals_1d = np.fromfile(seedname + '_eigenval.bin', dtype=np.float64)
     num_bands = int(len(eigenvals_1d) / nkp)
     eigenvals = np.reshape(eigenvals_1d, (num_bands, nkp), order='F')
     return eigenvals

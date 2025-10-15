@@ -206,12 +206,11 @@ contains
         integer :: i
         character(len=99) :: ofname
 
-        write(ofname, '(2a)') trim(adjustl(seedname)), '_spec_func.dat'
+        write(ofname, '(2a)') trim(adjustl(seedname)), '_spec_func.bin'
         print*, 'Writing output to: ', trim(adjustl(ofname))
-        open (201, file=trim(adjustl(ofname)))
-        do i=1, nene*nlayers*nkp
-            write(201, *) spec_func(i)
-        enddo
+        open (201, file=trim(adjustl(ofname)), form="unformatted",             &
+            access="stream", status="replace")
+        write(201) spec_func
         close(201)
     end subroutine write_spec_func
 
@@ -221,12 +220,11 @@ contains
         integer :: i
         character(len=99) :: ofname
 
-        write(ofname, '(2a)') trim(adjustl(seedname)), '_eigenval.dat'
+        write(ofname, '(2a)') trim(adjustl(seedname)), '_eigenval.bin'
         print*, 'Writing output to: ', trim(adjustl(ofname))
-        open(202, file=trim(adjustl(ofname)))
-            do i=1, nkp*tot_bands
-                write(202, *) energies(i)
-            enddo
+        open(202, file=trim(adjustl(ofname)), form="unformatted",              &
+            access="stream", status="replace")
+            write(202) energies
         close(202)
     end subroutine write_energies
 
