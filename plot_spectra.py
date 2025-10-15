@@ -62,6 +62,7 @@ def read_master_input():
     colourmap = 'inferno'
     fig_dimensions = np.empty([2])
     band_range = np.zeros([2])
+    spectra_range = np.zeros([2])
     with open('INPUT', 'r', encoding='utf-8') as f:
         for line in f:
             split_line = line.split()
@@ -85,6 +86,9 @@ def read_master_input():
             elif split_line[0] == 'band_yrange':
                 band_range[0] = float(split_line[1])
                 band_range[1] = float(split_line[2])
+            elif split_line[0] == 'spectra_yrange':
+                spectra_range[0] = float(split_line[1])
+                spectra_range[1] = float(split_line[2])
             elif split_line[0] == 'colourmap':
                 colourmap=split_line[1]
     if band_switch == 1 and gf_switch == 1:
@@ -95,7 +99,7 @@ def read_master_input():
         plotmode = 2
     energy_array = make_energy_array(emin, emax, energy_step, fermi_level)
     return nlayers, energy_array, seedname, fig_dimensions, plotmode,\
-    fermi_level, band_range, colourmap
+    fermi_level, band_range, colourmap, spectra_range
 
 
 def read_hr(seedname):
@@ -202,7 +206,7 @@ def read_eigenvalues(seedname, nkp):
 
 
 def plot_spectra(layer1, layer2, spectral_function, klist, omegas, seedname,
-                 fig_dims, locs, labels, colourmap):
+                 fig_dims, locs, labels, colourmap, spectra_range):
     """
     Draw the graph and save as raster image.
     :param layer1: First unit cell
@@ -237,6 +241,10 @@ def plot_spectra(layer1, layer2, spectral_function, klist, omegas, seedname,
         ax.set_xlabel('')
     else:
         ax.set_xlabel(r'$k\ (\mathrm{\AA}^{-1}$)')
+    if (spectra_range == 0).all():
+        ax.set_ylim(np.min(yy), np.max(yy))
+    else:
+        ax.set_ylim(spectra_range[0], spectra_range[1])
     plt.tight_layout()
     plt.savefig(filename)
 
@@ -281,7 +289,7 @@ def plot_bands(bandstructure, klist, fig_dims, fermi_level, seedname, locs,
 def main():
     # Initialise all the variables from the input files
     nlayers, energy_array, seedname, fig_dims, plotmode, fermi_level,\
-            band_range, colourmap = read_master_input()
+            band_range, colourmap, spectra_range = read_master_input()
     if plotmode == 0:
         sys.exit('You want to plot neither bands nor spectral function...'
                  'Quitting the programme...')
@@ -297,7 +305,8 @@ def main():
         print('Reading spectral data...')
         spectral_function = read_spectral_function(seedname, nene, nkp, nlayers)
         plot_spectra(layer_index1, layer_index2, spectral_function, kdists,
-                     energy_array, seedname, fig_dims, locs, labels, colourmap)
+                     energy_array, seedname, fig_dims, locs, labels, colourmap,
+                     spectra_range)
     if plotmode != 2:
         print('Reading eigenvalues...')
         eigenvals = read_eigenvalues(seedname, nkp)
